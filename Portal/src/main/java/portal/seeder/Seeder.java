@@ -3,6 +3,7 @@ package portal.seeder;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 
+@XmlRootElement
 public class Seeder {
     private String name;
     private String endpoint;
@@ -21,6 +22,11 @@ public class Seeder {
         this.videoSize = videoSize;
         this.bitrate = bitrate;
         this.keywords = keywords;
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + endpoint + " " + videoSize + " " + bitrate + " " + keywords;
     }
 
     public String getName() {
