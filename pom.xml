@@ -7,6 +7,7 @@
   <version>1.0-SNAPSHOT</version>
   <modules>
     <module>Portal</module>
+    <module>Client</module>
   </modules>
   <packaging>pom</packaging>
 
