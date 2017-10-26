@@ -1,21 +1,29 @@
 package client.cli;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
+import datamodels.Seeder;
 
-@Parameters()
-public class SearchSeedersCommand implements Runnable{
-    @Parameter()
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+
+public class SearchSeedersCommand implements Command{
     private String[] keywords;
 
     public SearchSeedersCommand(String[] keywords) {
         this.keywords = keywords;
     }
 
-    public void run() {
-        System.out.println("Searching..");
-        for (String i : keywords) {
-            System.out.println(i);
+    public void run(WebTarget target) {
+        Response response = target.path("seeder/search")
+                .request(MediaType.APPLICATION_JSON)
+                .get(Response.class);
+        if(response.getStatus() == 200) {
+            ArrayList<Seeder> list = response.readEntity(new GenericType<ArrayList<Seeder>>(){});
+            for (Seeder i : list) {
+                System.out.println(i);
+            }
         }
     }
 }

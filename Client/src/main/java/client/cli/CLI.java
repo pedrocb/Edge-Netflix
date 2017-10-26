@@ -1,31 +1,46 @@
 package client.cli;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Scanner;
+import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
+import org.glassfish.jersey.client.ClientConfig;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 
 public class CLI {
     private boolean running = true;
-    private String command;
+    private String input;
 
     public CLI() {
+        Client httpclient = ClientBuilder.newClient();
+        ClientConfig cc = new ClientConfig();
+        cc.register(MOXyJsonProvider.class);
+        WebTarget target = httpclient.target("http://localhost:9999");
+
         Scanner scanner = new Scanner(System.in);
-        Runnable runnable = null;
+        Command command = null;
 
         while (running) {
-            command = scanner.nextLine();
-            if (command.equals("seeder list")) {
-                runnable = new ListSeedersCommand();
-            } else if (command.startsWith("seeder search ")) {
-                String[] keywords = command.replace("seeder search ", "").split( " ");
-                runnable = new SearchSeedersCommand(keywords);
+            input = scanner.nextLine();
+            if (input.equals("seeder list")) {
+                command = new ListSeedersCommand();
+            } else if (input.startsWith("seeder search ")) {
+                String[] keywords = input.replace("seeder search ", "").split(" ");
+                command = new SearchSeedersCommand(keywords);
+            } else if(input.startsWith("download ")) {
+                String file = input.replace("download ", " ");
+                command = new DownloadFileCommand(file);
+            } else if(input.equals("quit")){
+                running = false;
             } else {
                 System.out.println("Bad usage");
                 continue;
             }
-            runnable.run();
+            command.run(target);
         }
     }
 }

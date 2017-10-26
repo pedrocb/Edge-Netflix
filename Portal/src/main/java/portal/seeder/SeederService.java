@@ -1,10 +1,11 @@
 package portal.seeder;
 
+import datamodels.Seeder;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Path("seeder")
