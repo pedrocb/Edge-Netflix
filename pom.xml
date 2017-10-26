@@ -26,12 +26,12 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
-        <version>RELEASE</version>
+        <version>9.4.7.v20170914</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-servlet</artifactId>
-        <version>RELEASE</version>
+        <version>9.4.7.v20170914</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.containers</groupId>

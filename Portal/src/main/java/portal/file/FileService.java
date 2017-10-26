@@ -16,6 +16,6 @@ public class FileService {
     @Produces(MediaType.APPLICATION_JSON)
     public Seeder downloadFile(JsonObject file) {
         System.out.println(file.getString("file"));
-        return new Seeder("video1", "tcp://localhost:9000", 900, 23, new ArrayList<String>(Arrays.asList("HAHA", "HEHE")));
+        return new Seeder("video1", "tcp://localhost:9000", 900, 23,new ArrayList<String>(Arrays.asList("HAHA", "HEHE")));
     }
 }

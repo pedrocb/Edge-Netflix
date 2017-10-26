@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Scanner;
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
+import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.client.ClientConfig;
 
 import javax.ws.rs.client.Client;
@@ -16,9 +17,9 @@ public class CLI {
     private String input;
 
     public CLI() {
-        Client httpclient = ClientBuilder.newClient();
-        ClientConfig cc = new ClientConfig();
-        cc.register(MOXyJsonProvider.class);
+        Client httpclient = ClientBuilder.newClient()
+                .property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true)
+                .register(MOXyJsonProvider.class);
         WebTarget target = httpclient.target("http://localhost:9999");
 
         Scanner scanner = new Scanner(System.in);

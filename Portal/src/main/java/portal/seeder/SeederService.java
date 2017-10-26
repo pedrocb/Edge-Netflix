@@ -15,8 +15,8 @@ public class SeederService {
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<Seeder> listServices() {
         ArrayList<Seeder> result = new ArrayList<Seeder>();
-        result.add(new Seeder("video1", "tcp://localhost:9000", 900, 23,new ArrayList<String>(Arrays.asList("HAHA", "HEHE"))));
-        result.add(new Seeder("video2", "tcp://localhost:9001", 900, 23,new ArrayList<String>(Arrays.asList("hah", "HEHE"))));
+        result.add(new Seeder("video1", "tcp://localhost:9000", 900, 23, new ArrayList<String>(Arrays.asList("HAHA", "HEHE"))));
+        result.add(new Seeder("video2", "tcp://localhost:9001", 900, 23, new ArrayList<String>(Arrays.asList("HAHA", "HEHE"))));
         return result;
     }
 
