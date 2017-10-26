@@ -1,10 +1,11 @@
 package portal.seeder;
 
+import datamodels.Seeder;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Path("seeder")
@@ -14,8 +15,8 @@ public class SeederService {
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<Seeder> listServices() {
         ArrayList<Seeder> result = new ArrayList<Seeder>();
-        result.add(new Seeder("video1", "tcp://localhost:9000", 900, 23,new ArrayList<String>(Arrays.asList("HAHA", "HEHE"))));
-        result.add(new Seeder("video2", "tcp://localhost:9001", 900, 23,new ArrayList<String>(Arrays.asList("hah", "HEHE"))));
+        result.add(new Seeder("video1", "tcp://localhost:9000", 900, 23, new ArrayList<String>(Arrays.asList("HAHA", "HEHE"))));
+        result.add(new Seeder("video2", "tcp://localhost:9001", 900, 23, new ArrayList<String>(Arrays.asList("HAHA", "HEHE"))));
         return result;
     }
 

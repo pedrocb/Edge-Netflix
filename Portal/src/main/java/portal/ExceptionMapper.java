@@ -1,13 +1,33 @@
 package portal;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 @Provider
-public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exception> {
+public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Throwable> {
 
-    public Response toResponse(Exception exception) {
+    @Override
+    public Response toResponse(Throwable exception)
+    {
         exception.printStackTrace();
-        return Response.status(500).build();
+        return Response.status(getStatusCode(exception))
+                .build();
     }
+
+    /*
+     * Get appropriate HTTP status code for an exception.
+     */
+    private int getStatusCode(Throwable exception)
+    {
+        if (exception instanceof WebApplicationException)
+        {
+            return ((WebApplicationException)exception).getResponse().getStatus();
+        }
+
+        return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+    }
+
 }
