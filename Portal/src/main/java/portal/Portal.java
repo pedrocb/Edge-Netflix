@@ -9,7 +9,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 
 public class Portal {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ResourceConfig config = new ResourceConfig()
                 .packages("portal");
 
@@ -31,7 +31,7 @@ public class Portal {
             jettyServer.join();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
+            jettyServer.stop();
             jettyServer.destroy();
         }
     }
