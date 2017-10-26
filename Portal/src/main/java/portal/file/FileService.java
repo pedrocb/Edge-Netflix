@@ -1,6 +1,6 @@
 package portal.file;
 
-import datamodels.Seeder;
+import datamodels.SeederBean;
 
 import javax.json.JsonObject;
 import javax.ws.rs.*;
@@ -14,8 +14,8 @@ public class FileService {
     @Path("download")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Seeder downloadFile(JsonObject file) {
+    public SeederBean downloadFile(JsonObject file) {
         System.out.println(file.getString("file"));
-        return new Seeder("video1", "tcp://localhost:9000", 900, 23,new ArrayList<String>(Arrays.asList("HAHA", "HEHE")));
+        return new SeederBean("video1", "tcp://localhost:9000", 900, 23,new ArrayList<String>(Arrays.asList("HAHA", "HEHE")));
     }
 }

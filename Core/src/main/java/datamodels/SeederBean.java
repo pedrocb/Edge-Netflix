@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 
 @XmlRootElement
-public class Seeder {
+public class SeederBean {
     private String name;
     private String endpoint;
     private int videoSize;
@@ -12,11 +12,11 @@ public class Seeder {
     private ArrayList<String> keywords;
 
 
-    public Seeder() {
+    public SeederBean() {
 
     }
 
-    public Seeder(String name, String endpoint, int videoSize, int bitrate, ArrayList<String> keywords) {
+    public SeederBean(String name, String endpoint, int videoSize, int bitrate, ArrayList<String> keywords) {
         this.name = name;
         this.endpoint = endpoint;
         this.videoSize = videoSize;

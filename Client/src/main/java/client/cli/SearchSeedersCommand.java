@@ -1,6 +1,6 @@
 package client.cli;
 
-import datamodels.Seeder;
+import datamodels.SeederBean;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
@@ -17,11 +17,12 @@ public class SearchSeedersCommand implements Command{
 
     public void run(WebTarget target) {
         Response response = target.path("seeder/search")
+                .queryParam("keyword", keywords[0])
                 .request(MediaType.APPLICATION_JSON)
                 .get(Response.class);
         if(response.getStatus() == 200) {
-            ArrayList<Seeder> list = response.readEntity(new GenericType<ArrayList<Seeder>>(){});
-            for (Seeder i : list) {
+            ArrayList<SeederBean> list = response.readEntity(new GenericType<ArrayList<SeederBean>>(){});
+            for (SeederBean i : list) {
                 System.out.println(i);
             }
         }

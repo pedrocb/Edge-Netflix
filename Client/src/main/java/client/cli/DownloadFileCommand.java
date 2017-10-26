@@ -1,6 +1,6 @@
 package client.cli;
 
-import datamodels.Seeder;
+import datamodels.SeederBean;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -21,7 +21,7 @@ public class DownloadFileCommand implements Command {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(body, MediaType.APPLICATION_JSON));
         if(response.getStatus() == 200) {
-            System.out.println(response.readEntity(Seeder.class));
+            System.out.println(response.readEntity(SeederBean.class));
         }
     }
 }

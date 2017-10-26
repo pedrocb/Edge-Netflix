@@ -9,6 +9,7 @@
     <module>Portal</module>
     <module>Client</module>
     <module>Core</module>
+    <module>Seeder</module>
   </modules>
   <packaging>pom</packaging>
 
