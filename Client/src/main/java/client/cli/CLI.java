@@ -33,7 +33,7 @@ public class CLI {
                 String[] keywords = input.replace("seeder search ", "").split(" ");
                 command = new SearchSeedersCommand(keywords);
             } else if(input.startsWith("download ")) {
-                String file = input.replace("download ", " ");
+                String file = input.replace("download ", "");
                 command = new DownloadFileCommand(file);
             } else if(input.equals("quit")){
                 running = false;

@@ -17,9 +17,10 @@ public class DownloadFileCommand implements Command {
     }
     public void run(WebTarget target) {
         JsonObject body = Json.createObjectBuilder().add("file", file).build();
+
         Response response = target.path("file/download")
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(body, MediaType.APPLICATION_JSON));
+                .post(Entity.json(body.toString()));
         if(response.getStatus() == 200) {
             System.out.println(response.readEntity(SeederBean.class));
         }
