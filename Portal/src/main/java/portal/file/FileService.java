@@ -3,10 +3,10 @@ package portal.file;
 import datamodels.SeederBean;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import portal_seeder.SeederInputP;
-import portal_seeder.SeederOutputP;
-import portal_seeder.SeederServicePGrpc;
-import portal_seeder.SeederServicePGrpc.SeederServicePBlockingStub;
+import masterSeeder.FileInfo;
+import masterSeeder.MasterSeederServiceGrpc;
+import masterSeeder.MasterSeederServiceGrpc.MasterSeederServiceBlockingStub;
+import masterSeeder.SeederEndpointInfo;
 
 import javax.json.JsonObject;
 import javax.ws.rs.*;
@@ -22,9 +22,9 @@ public class FileService {
     @Produces(MediaType.APPLICATION_JSON)
     public SeederBean downloadFile(JsonObject file) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9998).usePlaintext(true).build();
-        SeederServicePBlockingStub stub = SeederServicePGrpc.newBlockingStub(channel);
-        SeederOutputP seeder = stub.start(SeederInputP.newBuilder().setFilename("test").build());
-        System.out.println(seeder);
-        return new SeederBean(file.getString("file"), seeder.getEndpoint(), 900, 23,new ArrayList<String>(Arrays.asList("hah", "HEHE")));
+        MasterSeederServiceBlockingStub stub = MasterSeederServiceGrpc.newBlockingStub(channel);
+        String filename = file.getString("file");
+        SeederEndpointInfo info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).build());
+        return new SeederBean(file.getString("file"), "localhost:"+info.getPort(), 900, 23,new ArrayList<String>(Arrays.asList("hah", "HEHE")));
     }
 }

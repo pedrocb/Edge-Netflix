@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package masterSeeder;
+
+service MasterSeederService {
+    rpc createSeeder(FileInfo) returns (SeederEndpointInfo);
+}
+
+message FileInfo {
+    string filename = 1;
+}
+
+//TODO: Do we need to specify the transport?
+message SeederEndpointInfo {
+    //TODO: How do we know the address?
+    //string address = 1;
+    int32 port = 1;
+}
