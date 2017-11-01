@@ -11,6 +11,7 @@ import masterSeeder.SeederEndpointInfo;
 import javax.json.JsonObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,6 +26,29 @@ public class FileService {
         MasterSeederServiceBlockingStub stub = MasterSeederServiceGrpc.newBlockingStub(channel);
         String filename = file.getString("file");
         SeederEndpointInfo info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).build());
-        return new SeederBean(file.getString("file"), "localhost:"+info.getPort(), 900, 23,new ArrayList<String>(Arrays.asList("hah", "HEHE")));
+        try {
+            registerSeeder(filename,"localhost", info.getPort());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new SeederBean(filename, "localhost:"+info.getPort(), 900, 0,new ArrayList<String>(Arrays.asList("hah", "HEHE")));
+    }
+
+    private void registerSeeder(String filename, String address, int port) throws SQLException {
+        String jdbcUrl = String.format(
+                "jdbc:mysql://google/%s?cloudSqlInstance=%s&"
+                        + "socketFactory=com.google.cloud.sql.mysql.SocketFactory",
+                "edgeNetflix",
+                "groupc-179216:europe-west1:einstance-sql");
+
+        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
+        PreparedStatement st = connection.prepareStatement("INSERT INTO Seeders (FileID, Address, Port, Bitrate) " +
+                                                   "VALUES ((SELECT id from Files where Name = ?), ?, ?, ?);");
+        st.setString(1, filename);
+        st.setString(2, address);
+        st.setInt(3, port);
+        st.setInt(4, 0);
+        System.out.println(st);
+        st.executeUpdate();
     }
 }
