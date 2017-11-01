@@ -33,3 +33,5 @@ hs_err_pid*
 log/
 target
 /video-files/
+GroupC-ecce536ccdad.json
+cloud_sql_proxy
