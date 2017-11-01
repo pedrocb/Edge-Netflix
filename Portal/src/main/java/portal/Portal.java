@@ -17,18 +17,6 @@ import java.sql.Statement;
 public class Portal {
 
     public static void main(String[] args) throws Exception {
-        String jdbcUrl = String.format(
-                "jdbc:mysql://google/%s?cloudSqlInstance=%s&"
-                        + "socketFactory=com.google.cloud.sql.mysql.SocketFactory",
-                "edgeNetflix",
-                "groupc-179216:europe-west1:einstance-sql");
-
-        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM Files;");
-        while (rs.next()) {
-            System.out.println(rs.getString("Name"));
-        }
 
         ResourceConfig config = new ResourceConfig()
                 .packages("portal")

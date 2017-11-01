@@ -18,7 +18,7 @@ public class Seeder {
 
     public Seeder(String filename) {
         server = ServerBuilder.forPort(0).build();
-        downloadFile("video-files-groupc", filename);
+        //downloadFile("video-files-groupc", filename);
         try {
             server.start();
         } catch (IOException e) {
