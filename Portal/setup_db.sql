@@ -4,7 +4,7 @@ CREATE TABLE Files (
 );
 
 CREATE TABLE Seeders (
-  FileID INT,
+  FileId INT,
   Address VARCHAR(50),
   Port INT,
   Bitrate INT,
