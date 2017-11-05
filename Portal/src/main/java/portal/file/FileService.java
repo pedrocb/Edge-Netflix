@@ -3,10 +3,10 @@ package portal.file;
 import datamodels.SeederBean;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import masterSeeder.FileInfo;
-import masterSeeder.MasterSeederServiceGrpc;
-import masterSeeder.MasterSeederServiceGrpc.MasterSeederServiceBlockingStub;
-import masterSeeder.SeederEndpointInfo;
+import core.FileInfo;
+import core.MasterSeederServiceGrpc;
+import core.MasterSeederServiceGrpc.MasterSeederServiceBlockingStub;
+import core.Endpoint;
 
 import javax.json.JsonObject;
 import javax.ws.rs.*;
@@ -22,14 +22,14 @@ public class FileService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public SeederBean downloadFile(JsonObject file) {
-
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9998).usePlaintext(true).build();
         MasterSeederServiceBlockingStub stub = MasterSeederServiceGrpc.newBlockingStub(channel);
         String filename = file.getString("file");
-        SeederEndpointInfo info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).build());
         try {
             SeederBean seeder = getSeeder(filename);
             if (seeder == null) {
+                System.out.println("Seeder not found. Creating one ...");
+                Endpoint info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).build());
                 seeder = registerSeeder(filename, "localhost", info.getPort());
             }
             System.out.println(seeder);

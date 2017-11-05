@@ -25,8 +25,8 @@ public class Seeder {
     private int chunkMaxSize = 1024*1024;
 
     public Seeder(String filename) {
-        server = ServerBuilder.forPort(0).build();
-        downloadFile("video-files-groupc", filename);
+        server = ServerBuilder.forPort(0).addService(new SeederService()).build();
+        //downloadFile("video-files-groupc", filename);
         try {
             server.start();
         } catch (IOException e) {

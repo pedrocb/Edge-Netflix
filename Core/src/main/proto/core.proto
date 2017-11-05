@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package core;
+
+service MasterSeederService {
+    rpc createSeeder(FileInfo) returns (Endpoint);
+}
+
+service SeederService {
+    rpc joinSwarm(Endpoint) returns (ClientList);
+}
+
+message ClientList {
+    repeated Endpoint clients = 1;
+}
+message Endpoint {
+    string address = 1;
+    int32 port = 2;
+}
+
+message FileInfo {
+    string filename = 1;
+}
+
