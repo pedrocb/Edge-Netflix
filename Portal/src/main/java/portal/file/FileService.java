@@ -22,19 +22,44 @@ public class FileService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public SeederBean downloadFile(JsonObject file) {
+
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9998).usePlaintext(true).build();
         MasterSeederServiceBlockingStub stub = MasterSeederServiceGrpc.newBlockingStub(channel);
         String filename = file.getString("file");
         SeederEndpointInfo info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).build());
         try {
-            registerSeeder(filename,"localhost", info.getPort());
+            SeederBean seeder = getSeeder(filename);
+            if (seeder == null) {
+                seeder = registerSeeder(filename, "localhost", info.getPort());
+            }
+            System.out.println(seeder);
+            return seeder;
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
-        return new SeederBean(filename, "localhost:"+info.getPort(), 900, 0,new ArrayList<String>(Arrays.asList("hah", "HEHE")));
     }
 
-    private void registerSeeder(String filename, String address, int port) throws SQLException {
+    private SeederBean getSeeder(String filename) throws SQLException {
+        String jdbcUrl = String.format(
+                "jdbc:mysql://google/%s?cloudSqlInstance=%s&"
+                        + "socketFactory=com.google.cloud.sql.mysql.SocketFactory",
+                "edgeNetflix",
+                "groupc-179216:europe-west1:einstance-sql");
+
+        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
+        PreparedStatement st = connection.prepareStatement("SELECT * from Seeders INNER JOIN Files on Files.id = Seeders.FileId where Files.Name = ?;");
+        st.setString(1, filename);
+        ResultSet result = st.executeQuery();
+        if(result.next()) {
+            return new SeederBean(filename, result.getString("Address") + ":" + result.getInt("Port"), 900, result.getInt("Bitrate"), null) ;
+        }
+        else {
+            return null;
+        }
+    }
+
+    private SeederBean registerSeeder(String filename, String address, int port) throws SQLException {
         String jdbcUrl = String.format(
                 "jdbc:mysql://google/%s?cloudSqlInstance=%s&"
                         + "socketFactory=com.google.cloud.sql.mysql.SocketFactory",
@@ -50,5 +75,6 @@ public class FileService {
         st.setInt(4, 0);
         System.out.println(st);
         st.executeUpdate();
+        return new SeederBean(filename, address + ":" + port, 900, 0, null) ;
     }
 }

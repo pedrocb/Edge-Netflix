@@ -22,7 +22,7 @@ public class DownloadFileCommand implements Command {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(body.toString()));
         if(response.getStatus() == 200) {
-            System.out.println(response.readEntity(SeederBean.class));
+            System.out.println("Connecting to seeder " + response.readEntity(SeederBean.class));
         }
     }
 }

@@ -20,6 +20,7 @@ public class MasterSeederService extends MasterSeederServiceGrpc.MasterSeederSer
         String filename = request.getFilename();
         Seeder seeder = new Seeder(filename);
         seeders.add(seeder);
+        System.out.println("Created seeder on port " + seeder.getPort());
         responseObserver.onNext(SeederEndpointInfo.newBuilder().setPort(seeder.getPort()).build());
         responseObserver.onCompleted();
     }
