@@ -21,12 +21,13 @@ public class Seeder {
 
     private Server server;
     private byte[] fileContent;
-    private ArrayList<byte[]> chunkHashes;
     private int chunkMaxSize = 1024*1024;
 
     public Seeder(String filename) {
-        server = ServerBuilder.forPort(0).addService(new SeederService()).build();
-        //downloadFile("video-files-groupc", filename);
+        downloadFile("video-files-groupc", filename);
+        System.out.println("Video Size = " + fileContent.length);
+        ArrayList<byte[]> chunkHashes = calculateChunkHashes();
+        server = ServerBuilder.forPort(0).addService(new SeederService(chunkHashes, fileContent.length, chunkMaxSize)).build();
         try {
             server.start();
         } catch (IOException e) {
@@ -46,7 +47,6 @@ public class Seeder {
             return;
         }
         fileContent = blob.getContent();
-        calculateChunkHashes();
     }
 
 

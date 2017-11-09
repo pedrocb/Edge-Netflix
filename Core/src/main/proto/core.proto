@@ -9,12 +9,16 @@ service MasterSeederService {
 }
 
 service SeederService {
-    rpc joinSwarm(Endpoint) returns (ClientList);
+    rpc joinSwarm(Endpoint) returns (JoinResponse);
 }
 
-message ClientList {
+message JoinResponse {
     repeated Endpoint clients = 1;
+    repeated bytes hashes = 2;
+    int32 videoSize = 3; // In bytes
+    int32 chunkSize = 4; // In bytes
 }
+
 message Endpoint {
     string address = 1;
     int32 port = 2;

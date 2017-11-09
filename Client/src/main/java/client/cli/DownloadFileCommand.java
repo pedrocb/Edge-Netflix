@@ -1,7 +1,8 @@
 package client.cli;
 
-import core.ClientList;
+import com.google.protobuf.ByteString;
 import core.Endpoint;
+import core.JoinResponse;
 import core.SeederServiceGrpc;
 import datamodels.SeederBean;
 import io.grpc.ManagedChannel;
@@ -15,6 +16,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -30,6 +32,7 @@ public class DownloadFileCommand implements Command {
         Response response = target.path("file/download")
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(body.toString()));
+
         if(response.getStatus() == 200) {
             SeederBean seeder = response.readEntity(SeederBean.class);
             System.out.println("Connecting to seeder " + seeder);
@@ -39,10 +42,14 @@ public class DownloadFileCommand implements Command {
             int random = new Random().nextInt();
             System.out.println("Port number " + random + "joined.");
             Endpoint endpoint = Endpoint.newBuilder().setAddress("localhost").setPort(random).build();
-            ClientList clients = stub.joinSwarm(endpoint);
+            JoinResponse joinResponse = stub.joinSwarm(endpoint);
             System.out.println("Got clients:");
-            for (Endpoint i : clients.getClientsList()) {
-                    System.out.println(i);
+            for (Endpoint i : joinResponse.getClientsList()) {
+                System.out.println(i);
+            }
+            System.out.println("Got hashes:");
+            for (ByteString i : joinResponse.getHashesList()) {
+                System.out.println(Base64.getEncoder().encodeToString(i.toByteArray()));
             }
         }
     }
