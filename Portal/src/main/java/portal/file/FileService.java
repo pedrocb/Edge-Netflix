@@ -52,7 +52,7 @@ public class FileService {
         st.setString(1, filename);
         ResultSet result = st.executeQuery();
         if(result.next()) {
-            return new SeederBean(filename, result.getString("Address") + ":" + result.getInt("Port"), 900, result.getInt("Bitrate"), null) ;
+            return new SeederBean(result.getString("Address") + ":" + result.getInt("Port"), result.getInt("Bitrate")) ;
         }
         else {
             return null;
@@ -75,6 +75,6 @@ public class FileService {
         st.setInt(4, 0);
         System.out.println(st);
         st.executeUpdate();
-        return new SeederBean(filename, address + ":" + port, 900, 0, null) ;
+        return new SeederBean(address + ":" + port, 0) ;
     }
 }

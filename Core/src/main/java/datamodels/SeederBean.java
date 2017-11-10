@@ -5,36 +5,21 @@ import java.util.ArrayList;
 
 @XmlRootElement
 public class SeederBean {
-    private String name;
     private String endpoint;
-    private int videoSize;
     private int bitrate;
-    private ArrayList<String> keywords;
-
 
     public SeederBean() {
 
     }
 
-    public SeederBean(String name, String endpoint, int videoSize, int bitrate, ArrayList<String> keywords) {
-        this.name = name;
+    public SeederBean(String endpoint, int bitrate) {
         this.endpoint = endpoint;
-        this.videoSize = videoSize;
         this.bitrate = bitrate;
-        this.keywords = keywords;
     }
 
     @Override
     public String toString() {
-        return name + " " + endpoint + " " + videoSize + " " + bitrate + " " + keywords;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return endpoint + " " + bitrate;
     }
 
     public String getEndpoint() {
@@ -45,14 +30,6 @@ public class SeederBean {
         this.endpoint = endpoint;
     }
 
-    public int getVideoSize() {
-        return videoSize;
-    }
-
-    public void setVideoSize(int videoSize) {
-        this.videoSize = videoSize;
-    }
-
     public int getBitrate() {
         return bitrate;
     }
@@ -61,11 +38,4 @@ public class SeederBean {
         this.bitrate = bitrate;
     }
 
-    public ArrayList<String> getKeywords() {
-        return keywords;
-    }
-
-    public void setKeywords(ArrayList<String> keywords) {
-        this.keywords = keywords;
-    }
 }
