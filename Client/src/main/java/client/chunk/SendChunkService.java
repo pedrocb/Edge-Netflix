@@ -1,26 +1,48 @@
 package client.chunk;
 
+import client.File;
 import com.google.protobuf.ByteString;
 import core.SendChunkServiceGrpc;
 import core.Chunk;
 import core.Request;
 import io.grpc.stub.StreamObserver;
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
 
 public class SendChunkService extends SendChunkServiceGrpc.SendChunkServiceImplBase {
-    private ByteString chunk;
-    public SendChunkService() {
+    private ArrayList<File> files;
+
+    public SendChunkService(ArrayList files) {
         super();
-        chunk = ByteString.copyFromUtf8("Hello World");
+        this.files = files;
     }
 
     @Override
     public void requestChunk(Request request, StreamObserver responseObserver){
         String filename = request.getFilename();
-        int startIndex = request.getStartIndex();
+        int index = request.getIndex();
+        File file = null;
+        for(File _file : files){
+            if(_file.getFilename().equals(filename)){
+                file = _file;
+                break;
+            }
+        }
+        if(file == null){
+            System.out.println("Do not have file");
+            //responseObserver.onError(new Exception("Do not have file"));
+        }
+        if(!file.hasChunkAt(index)){
+            System.out.println("Do not have chunk");
+            //responseObserver.onError(new Exception("Do not have chunk"));
+        }
+        int chunkSize = file.getChunkSize();
+        if(index*chunkSize + chunkSize  > file.getSize()){
+            chunkSize = file.getSize() - index * file.getChunkSize();
+        }
+        ByteString chunk = ByteString.copyFrom(file.getData(),index*file.getChunkSize(), chunkSize);
         Chunk response = Chunk.newBuilder().setData(chunk).build();
-        System.out.println("Filename: "+filename+" Chunk start: "+startIndex);
+        System.out.println("Sending Filename: "+filename+" Chunk index: "+index);
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

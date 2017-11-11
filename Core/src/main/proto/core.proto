@@ -34,7 +34,7 @@ message FileInfo {
 
 message Request {
     string filename = 1;
-    int32 startIndex = 2;
+    int32 index = 2;
 }
 
 message Chunk {

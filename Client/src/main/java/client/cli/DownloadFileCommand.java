@@ -36,7 +36,7 @@ public class DownloadFileCommand implements Command {
         if(response.getStatus() == 200) {
             ManagedChannel clientChannel = ManagedChannelBuilder.forTarget("localhost:9000").usePlaintext(true).build();
             SendChunkServiceGrpc.SendChunkServiceBlockingStub clientStub = SendChunkServiceGrpc.newBlockingStub(clientChannel);
-            Request request = Request.newBuilder().setFilename("Kill Bill").setStartIndex(0).build();
+            Request request = Request.newBuilder().setFilename("tl_512kb.mp4").setIndex(3).build();
             Chunk recievedChunk = clientStub.requestChunk(request);
             ByteString chunk = recievedChunk.getData();
             String message = chunk.toStringUtf8();
