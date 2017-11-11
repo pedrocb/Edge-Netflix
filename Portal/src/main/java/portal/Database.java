@@ -34,6 +34,26 @@ public class Database {
         return result;
     }
 
+    public static void removeSeeder(int id) throws SQLException {
+        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
+        PreparedStatement ps = connection.prepareStatement("DELETE FROM Seeders WHERE Id = ?;");
+        ps.setInt(1, id);
+        ps.executeUpdate();
+    }
+
+    public static ArrayList<SeederBean> getAllSeeders() throws SQLException {
+        ArrayList<SeederBean> result = new ArrayList<>();
+        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
+        ResultSet seeders = connection.createStatement().executeQuery("SELECT * FROM Seeders;");
+        while (seeders.next()) {
+            SeederBean seederBean = new SeederBean(seeders.getString("Address") + ":" + seeders.getInt("Port"), seeders.getInt("Bitrate"));
+            seederBean.setId(seeders.getInt("Id"));
+            result.add(seederBean);
+        }
+
+        return result;
+    }
+
     public static FileBean getFile(String filename) throws SQLException {
         Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
         PreparedStatement st = connection.prepareStatement("SELECT * from Files LEFT JOIN Seeders ON Seeders.FileId = Files.id where Files.Name = ?;");
