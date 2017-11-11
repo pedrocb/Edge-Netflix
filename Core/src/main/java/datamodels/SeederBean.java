@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class SeederBean {
     private String endpoint;
     private int bitrate;
+    private int id;
 
     public SeederBean() {
 
@@ -16,6 +17,7 @@ public class SeederBean {
         this.endpoint = endpoint;
         this.bitrate = bitrate;
     }
+
 
     @Override
     public String toString() {
@@ -38,4 +40,11 @@ public class SeederBean {
         this.bitrate = bitrate;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

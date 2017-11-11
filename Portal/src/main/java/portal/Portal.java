@@ -17,7 +17,7 @@ import java.sql.Statement;
 public class Portal {
 
     public static void main(String[] args) throws Exception {
-
+        new HealthCheck().start();
         ResourceConfig config = new ResourceConfig()
                 .packages("portal")
                 .property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true)
@@ -35,6 +35,7 @@ public class Portal {
         requestLog.setRetainDays(90);
 
         jettyServer.setRequestLog(requestLog);
+        System.out.println("REST API started..");
 
 
         try {

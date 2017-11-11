@@ -33,7 +33,6 @@ public class FileService {
         try {
             FileBean file = Database.getFile(filename);
             System.out.println(file);
-            System.out.println(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
             if (file != null) {
                 if(file.getSeeder() == null) {
                     System.out.println("Seeder not found. Creating one ...");

@@ -26,6 +26,7 @@ public class SeederService {
         ArrayList<FileBean> result = new ArrayList<>();
         try {
             result = Database.getAllFiles();
+            System.out.println(result);
         } catch (SQLException e) {
             System.out.println("Error connecting to database");
             e.printStackTrace();

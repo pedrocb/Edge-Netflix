@@ -1,9 +1,7 @@
 package seeder;
 
 import com.google.protobuf.ByteString;
-import core.Endpoint;
-import core.JoinResponse;
-import core.SeederServiceGrpc;
+import core.*;
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
@@ -18,6 +16,12 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
         this.chunkHashes = chunkHashes;
         this.videoSize = videoSize;
         this.chunkSize = chunkSize;
+    }
+
+    @Override
+    public void healthCheck(Empty request, StreamObserver<HealthResponse> responseObserver) {
+        responseObserver.onNext(HealthResponse.newBuilder().setStatus(HealthResponse.Status.OK).build());
+        responseObserver.onCompleted();
     }
 
     @Override
