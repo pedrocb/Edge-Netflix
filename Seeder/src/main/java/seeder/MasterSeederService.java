@@ -6,6 +6,7 @@ import core.MasterSeederServiceGrpc;
 import core.Endpoint;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class MasterSeederService extends MasterSeederServiceGrpc.MasterSeederServiceImplBase {
     private ArrayList<Seeder> seeders;
@@ -17,11 +18,13 @@ public class MasterSeederService extends MasterSeederServiceGrpc.MasterSeederSer
 
     @Override
     public void createSeeder(FileInfo request, StreamObserver<Endpoint> responseObserver) {
+        System.out.println("Request received");
         String filename = request.getFilename();
         Seeder seeder = new Seeder(filename);
         seeders.add(seeder);
         System.out.println("Created seeder on port " + seeder.getPort());
-        responseObserver.onNext(Endpoint.newBuilder().setPort(seeder.getPort()).build());
+        // TODO: Change localhost
+        responseObserver.onNext(Endpoint.newBuilder().setPort(seeder.getPort()).setAddress("localhost").build());
         responseObserver.onCompleted();
     }
 }

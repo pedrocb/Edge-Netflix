@@ -2,7 +2,9 @@ CREATE TABLE Files (
   Name VARCHAR(50),
   ID serial primary key,
   -- In Bytes
-  Size INT
+  Size INT,
+  -- In Bytes
+  ChunkSize INT
 );
 
 CREATE TABLE Seeders (
@@ -18,11 +20,11 @@ CREATE TABLE Keywords (
   Keyword VARCHAR(30)
 );
 
-INSERT INTO Files (Name, Size)
-VALUES ('CC_1916_07_10_TheVagabond.mp4', 150003982),
-       ('night_of_the_living_dead_512kb.mp4', 415473786),
-       ('PopeyeAliBaba_512kb.mp4', 73918195),
-       ('tl_512kb.mp4', 28211605);
+INSERT INTO Files (Name, Size, ChunkSize)
+VALUES ('CC_1916_07_10_TheVagabond.mp4', 150003982, 1024*1024),
+       ('night_of_the_living_dead_512kb.mp4', 415473786, 1024*1024),
+       ('PopeyeAliBaba_512kb.mp4', 73918195, 1024*1024),
+       ('tl_512kb.mp4', 28211605, 1024*1024);
 
 INSERT INTO Keywords (FileId, Keyword)
 VALUES (1, 'mp4'),
