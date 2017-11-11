@@ -3,6 +3,7 @@ package client.cli;
 import client.chunk.SendChunkService;
 import com.google.protobuf.ByteString;
 import core.*;
+import datamodels.FileBean;
 import datamodels.SeederBean;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -41,8 +42,11 @@ public class DownloadFileCommand implements Command {
             String message = chunk.toStringUtf8();
             System.out.println(message);
 
-            SeederBean seeder = response.readEntity(SeederBean.class);
+            FileBean fileBean = response.readEntity(FileBean.class);
+            SeederBean seeder = fileBean.getSeeder();
             System.out.println("Connecting to seeder " + seeder);
+            System.out.println(fileBean);
+            System.out.println(fileBean.getChunkSize());
 
             ManagedChannel channel = ManagedChannelBuilder.forTarget(seeder.getEndpoint()).usePlaintext(true).build();
             SeederServiceGrpc.SeederServiceBlockingStub stub = SeederServiceGrpc.newBlockingStub(channel);
@@ -50,6 +54,7 @@ public class DownloadFileCommand implements Command {
             System.out.println("Port number " + random + "joined.");
             Endpoint endpoint = Endpoint.newBuilder().setAddress("localhost").setPort(random).build();
             JoinResponse joinResponse = stub.joinSwarm(endpoint);
+            System.out.println(joinResponse);
             System.out.println("Got clients:");
             for (Endpoint i : joinResponse.getClientsList()) {
                 System.out.println(i);

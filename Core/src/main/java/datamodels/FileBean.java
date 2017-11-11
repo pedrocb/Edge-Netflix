@@ -7,16 +7,18 @@ public class FileBean {
     private int size;
     private SeederBean seeder;
     private ArrayList<String> keywords;
+    private int chunkSize;
 
     public FileBean() {
 
     }
 
-    public FileBean(String name, int size, SeederBean seeder, ArrayList<String> keywords) {
+    public FileBean(String name, int size, SeederBean seeder, ArrayList<String> keywords, int chunkSize) {
         this.name = name;
         this.size = size;
         this.seeder = seeder;
         this.keywords = keywords;
+        this.chunkSize = chunkSize;
     }
 
     public String getName() {
@@ -54,5 +56,13 @@ public class FileBean {
     @Override
     public String toString() {
         return "File: " + name + " " + size + " " + keywords + "\n" + ((seeder != null) ? seeder : "");
+    }
+
+    public int getChunkSize() {
+        return chunkSize;
+    }
+
+    public void setChunkSize(int chunkSize) {
+        this.chunkSize = chunkSize;
     }
 }
