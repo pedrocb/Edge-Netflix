@@ -1,9 +1,8 @@
 package client.cli;
 
+import client.chunk.SendChunkService;
 import com.google.protobuf.ByteString;
-import core.Endpoint;
-import core.JoinResponse;
-import core.SeederServiceGrpc;
+import core.*;
 import datamodels.SeederBean;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -34,6 +33,14 @@ public class DownloadFileCommand implements Command {
                 .post(Entity.json(body.toString()));
 
         if(response.getStatus() == 200) {
+            ManagedChannel clientChannel = ManagedChannelBuilder.forTarget("localhost:9000").usePlaintext(true).build();
+            SendChunkServiceGrpc.SendChunkServiceBlockingStub clientStub = SendChunkServiceGrpc.newBlockingStub(clientChannel);
+            Request request = Request.newBuilder().setFilename("Kill Bill").setStartIndex(0).build();
+            Chunk recievedChunk = clientStub.requestChunk(request);
+            ByteString chunk = recievedChunk.getData();
+            String message = chunk.toStringUtf8();
+            System.out.println(message);
+
             SeederBean seeder = response.readEntity(SeederBean.class);
             System.out.println("Connecting to seeder " + seeder);
 

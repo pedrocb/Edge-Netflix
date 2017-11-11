@@ -12,6 +12,10 @@ service SeederService {
     rpc joinSwarm(Endpoint) returns (JoinResponse);
 }
 
+service SendChunkService {
+    rpc requestChunk(Request) returns (Chunk);
+}
+
 message JoinResponse {
     repeated Endpoint clients = 1;
     repeated bytes hashes = 2;
@@ -28,3 +32,11 @@ message FileInfo {
     string filename = 1;
 }
 
+message Request {
+    string filename = 1;
+    int32 startIndex = 2;
+}
+
+message Chunk {
+    bytes data = 1;
+}
