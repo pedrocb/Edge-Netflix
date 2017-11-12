@@ -21,7 +21,6 @@ public class Client {
 
         files = new ArrayList<>();
         listener = new Listener(files);
-        System.out.println("port!!!"+listener.getPort());
         int port = listener.getPort();
         listener.start();
         new CLI(files, port);
