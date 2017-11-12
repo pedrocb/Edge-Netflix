@@ -18,7 +18,7 @@ public class SearchSeedersCommand implements Command{
 
     public void run(WebTarget target) {
         Response response = target.path("seeder/search")
-                .queryParam("keyword", keywords[0])
+                .queryParam("keyword", keywords)
                 .request(MediaType.APPLICATION_JSON)
                 .get(Response.class);
         if(response.getStatus() == 200) {

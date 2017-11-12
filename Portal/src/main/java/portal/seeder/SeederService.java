@@ -13,6 +13,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import portal.Database;
@@ -22,32 +23,33 @@ public class SeederService {
     @GET
     @Path("list")
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<FileBean> listServices() {
+    public Response  listServices() {
         ArrayList<FileBean> result = new ArrayList<>();
         try {
             result = Database.getAllFiles();
             System.out.println(result);
         } catch (SQLException e) {
-            System.out.println("Error connecting to database");
-            e.printStackTrace();
+            System.out.println("[ERROR] Can't access database");
+            return Response.status(503).build();
         }
-        return result;
+        return Response.status(200).entity(result).build();
     }
 
     @GET
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<FileBean> searchServices(@QueryParam("keyword") final String keyword) {
+    public Response searchServices(@QueryParam("keyword") final List<String> keyword) {
+        System.out.println(keyword);
         ArrayList<FileBean> files = new ArrayList<>();
         ArrayList<FileBean> result = new ArrayList<>();
         try {
             files = Database.getAllFiles();
-            result = new ArrayList<>(files.stream().filter(file -> file.getKeywords().contains(keyword)).collect(Collectors.toList()));
+            result = new ArrayList<>(files.stream().filter(file -> file.getKeywords().containsAll(keyword)).collect(Collectors.toList()));
         } catch (SQLException e) {
-            System.out.println("Error connecting to database");
+            System.out.println("[ERROR] Can't access database");
+            return Response.status(503).build();
         }
-
-        return result;
+        return Response.status(200).entity(result).build();
     }
 
 }

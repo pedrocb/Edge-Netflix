@@ -13,15 +13,24 @@ public class Database {
                         + "socketFactory=com.google.cloud.sql.mysql.SocketFactory",
                 "edgeNetflix",
                 "groupc-179216:europe-west1:einstance-sql");
+    private static Connection connection = null;
+
+    public static void setupConnection() throws SQLException {
+        String user = Portal.config.getProperty("dbUser", "root");
+        String password = Portal.config.getProperty("dbPassword", "");
+        if (connection == null) {
+            connection = DriverManager.getConnection(jdbcUrl, user, password);
+        }
+    }
 
     public static ArrayList<FileBean> getAllFiles() throws SQLException {
+        setupConnection();
         ArrayList<FileBean> result = new ArrayList<FileBean>();
-        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
         ResultSet files = connection.createStatement().executeQuery("SELECT * FROM Files LEFT JOIN Seeders ON Seeders.FileId = Files.id;");
         int fileId;
         while (files.next()) {
             fileId = files.getInt("Files.ID");
-            ArrayList<String> keywords = getKeywords(connection, fileId);
+            ArrayList<String> keywords = getKeywords(fileId);
             SeederBean seeder = null;
             String address = files.getString("Address");
             if (!files.wasNull()) {
@@ -35,15 +44,15 @@ public class Database {
     }
 
     public static void removeSeeder(int id) throws SQLException {
-        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
+        setupConnection();
         PreparedStatement ps = connection.prepareStatement("DELETE FROM Seeders WHERE Id = ?;");
         ps.setInt(1, id);
         ps.executeUpdate();
     }
 
     public static ArrayList<SeederBean> getAllSeeders() throws SQLException {
+        setupConnection();
         ArrayList<SeederBean> result = new ArrayList<>();
-        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
         ResultSet seeders = connection.createStatement().executeQuery("SELECT * FROM Seeders;");
         while (seeders.next()) {
             SeederBean seederBean = new SeederBean(seeders.getString("Address") + ":" + seeders.getInt("Port"), seeders.getInt("Bitrate"));
@@ -55,13 +64,13 @@ public class Database {
     }
 
     public static FileBean getFile(String filename) throws SQLException {
-        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
+        setupConnection();
         PreparedStatement st = connection.prepareStatement("SELECT * from Files LEFT JOIN Seeders ON Seeders.FileId = Files.id where Files.Name = ?;");
         st.setString(1, filename);
         ResultSet result = st.executeQuery();
         if(result.next()) {
             SeederBean seeder = null;
-            ArrayList<String> keywords = getKeywords(connection, result.getInt("Files.ID"));
+            ArrayList<String> keywords = getKeywords(result.getInt("Files.ID"));
             String seederAddress = result.getString("Address");
             if(!result.wasNull()) {
                 seeder = new SeederBean(seederAddress + ":" + result.getString("Port"), result.getInt("Bitrate"));
@@ -73,7 +82,7 @@ public class Database {
         }
     }
 
-    private static ArrayList<String> getKeywords(Connection connection, int fileId) throws SQLException {
+    private static ArrayList<String> getKeywords(int fileId) throws SQLException {
         ArrayList<String> keywords = new ArrayList<>();
         PreparedStatement keywordsStatement = connection.prepareStatement("SELECT Keyword FROM Keywords WHERE FileId = ?;");
         keywordsStatement.setInt(1, fileId);
@@ -85,7 +94,7 @@ public class Database {
     }
 
     public static SeederBean registerSeeder(String filename, String address, int port) throws SQLException {
-        Connection connection = DriverManager.getConnection(jdbcUrl, "root", "");
+        setupConnection();
         PreparedStatement st = connection.prepareStatement("INSERT INTO Seeders (FileID, Address, Port, Bitrate) " +
                 "VALUES ((SELECT id from Files where Name = ?), ?, ?, ?);");
         st.setString(1, filename);
