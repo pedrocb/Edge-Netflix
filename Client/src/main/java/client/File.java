@@ -28,6 +28,15 @@ public class File {
         }
     }
 
+    public boolean isDownloaded(){
+        for(boolean value : hasChunk ){
+            if(!value){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean hasChunkAt(int index){
         return this.hasChunk[index];
     }

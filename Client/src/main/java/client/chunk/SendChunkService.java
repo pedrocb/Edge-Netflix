@@ -28,13 +28,16 @@ public class SendChunkService extends SendChunkServiceGrpc.SendChunkServiceImplB
                 break;
             }
         }
+        file = null;
         if(file == null){
             System.out.println("Do not have file");
-            //responseObserver.onError(new Exception("Do not have file"));
+            responseObserver.onError(new Exception("Do not have file"));
+            return;
         }
         if(!file.hasChunkAt(index)){
             System.out.println("Do not have chunk");
-            //responseObserver.onError(new Exception("Do not have chunk"));
+            responseObserver.onError(new Exception("Do not have chunk"));
+            return;
         }
         int chunkSize = file.getChunkSize();
         if(index*chunkSize + chunkSize  > file.getSize()){

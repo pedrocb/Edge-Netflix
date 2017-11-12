@@ -23,8 +23,10 @@ public class Client {
         files = new ArrayList<>();
         files.add(file);
         listener = new Listener(files);
+        System.out.println("port!!!"+listener.getPort());
+        int port = listener.getPort();
         listener.start();
-        new CLI(files);
+        new CLI(files, port);
     }
     public static void main(String[] args) {
         new Client();

@@ -19,8 +19,9 @@ public class CLI {
     private boolean running = true;
     private String input;
     private ArrayList<File> files;
+    private int port;
 
-    public CLI(ArrayList files) {
+    public CLI(ArrayList files, int port) {
         this.files = files;
         Client httpclient = ClientBuilder.newClient()
                 .property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true)
@@ -39,7 +40,7 @@ public class CLI {
                 command = new SearchSeedersCommand(keywords);
             } else if(input.startsWith("download ")) {
                 String file = input.replace("download ", "");
-                command = new DownloadFileCommand(file);
+                command = new DownloadFileCommand(file, port);
             } else if(input.equals("quit")){
                 running = false;
             } else {

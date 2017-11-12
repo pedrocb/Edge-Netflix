@@ -10,17 +10,22 @@ import java.util.ArrayList;
 
 public class Listener extends Thread{
     private Server server;
+
+    public int getPort() {
+        return port;
+    }
+
     private int port;
     private ArrayList<File> files;
 
     public Listener(ArrayList files){
        this.files = files;
+       port = selectPort(9000);
     }
 
     @Override
     public void run() {
         try {
-            port = selectPort(9000);
             startServer();
             blockUntilShutdown();
 
