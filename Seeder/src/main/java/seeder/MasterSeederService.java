@@ -20,7 +20,8 @@ public class MasterSeederService extends MasterSeederServiceGrpc.MasterSeederSer
     public void createSeeder(FileInfo request, StreamObserver<Endpoint> responseObserver) {
         System.out.println("Request received");
         String filename = request.getFilename();
-        Seeder seeder = new Seeder(filename);
+        int chunkSize = request.getChunkSize();
+        Seeder seeder = new Seeder(filename, chunkSize);
         seeders.add(seeder);
         System.out.println("Created seeder on port " + seeder.getPort());
         // TODO: Change localhost

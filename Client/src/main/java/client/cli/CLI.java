@@ -1,15 +1,12 @@
 package client.cli;
 
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import client.File;
+import datamodels.File;
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 import org.glassfish.jersey.CommonProperties;
-import org.glassfish.jersey.client.ClientConfig;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

@@ -36,7 +36,7 @@ public class FileService {
             if (file != null) {
                 if(file.getSeeder() == null) {
                     System.out.println("Seeder not found. Creating one ...");
-                    Endpoint info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).build());
+                    Endpoint info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).setChunkSize(file.getChunkSize()).build());
                     SeederBean seeder = Database.registerSeeder(filename, info.getAddress(), info.getPort());
                     file.setSeeder(seeder);
                 }

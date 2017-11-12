@@ -1,9 +1,8 @@
 package client;
 
 import client.chunk.Listener;
-import client.chunk.SendChunkService;
 import client.cli.CLI;
-import io.grpc.ServerBuilder;
+import datamodels.File;
 
 import java.util.ArrayList;
 
@@ -12,16 +11,8 @@ public class Client {
     private ArrayList<File> files;
 
     public Client() {
-        byte [] string = null;
-        try{
-            string = "Hello World".getBytes("UTF-8");
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
         files = new ArrayList<>();
         listener = new Listener(files);
-        System.out.println("port!!!"+listener.getPort());
         int port = listener.getPort();
         listener.start();
         new CLI(files, port);
