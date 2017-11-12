@@ -14,7 +14,7 @@ public class Listener extends Thread{
     private ArrayList<File> files;
 
     public Listener(ArrayList files){
-       this.files = files;
+        this.files = files;
     }
 
     @Override

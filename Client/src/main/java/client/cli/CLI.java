@@ -34,19 +34,23 @@ public class CLI {
             input = scanner.nextLine();
             if (input.equals("seeder list")) {
                 command = new ListSeedersCommand();
+                command.run(target);
             } else if (input.startsWith("seeder search ")) {
                 String[] keywords = input.replace("seeder search ", "").split(" ");
                 command = new SearchSeedersCommand(keywords);
+                command.run(target);
             } else if(input.startsWith("download ")) {
                 String file = input.replace("download ", "");
-                command = new DownloadFileCommand(file);
+                command = new DownloadFileCommand(file, files);
+                command.run(target);
+            } else if(input.equals("list files")) {
+                System.out.println(files);
             } else if(input.equals("quit")){
                 running = false;
             } else {
                 System.out.println("Bad usage");
                 continue;
             }
-            command.run(target);
         }
     }
 }

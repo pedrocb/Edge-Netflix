@@ -1,6 +1,9 @@
 package client;
 
 import com.google.protobuf.ByteString;
+import core.Endpoint;
+
+import java.util.ArrayList;
 
 public class File {
     private String filename;
@@ -10,22 +13,17 @@ public class File {
     private int numChunks;
     private boolean[] hasChunk;
 
-    public File(String filename, byte[] data, int size, int chunkSize) {
+    private ArrayList<Endpoint> peers;
+    private String[] hashes;
+
+    public File(String filename, int size, int chunkSize, ArrayList<Endpoint> peers) {
         this.filename = filename;
-        this.data = data;
         this.size = size;
         this.chunkSize = chunkSize;
-        this.numChunks = calculateNumChunks(size, chunkSize);
+        this.numChunks = (int) Math.ceil((float)size/chunkSize);
         this.hasChunk = new boolean[numChunks];
-    }
-
-    public int calculateNumChunks(int size, int chunkSize){
-        for(int numChunks = 0;;){
-            numChunks = numChunks + 1;
-            if(numChunks*chunkSize >= size){
-                return numChunks;
-            }
-        }
+        this.data = new byte[size];
+        this.peers = peers;
     }
 
     public boolean hasChunkAt(int index){
@@ -82,5 +80,18 @@ public class File {
 
     public void setHasChunk(boolean[] hasChunk) {
         this.hasChunk = hasChunk;
+    }
+
+    public String[] getHashes() {
+        return hashes;
+    }
+
+    public void setHashes(String[] hashes) {
+        this.hashes = hashes;
+    }
+
+    @Override
+    public String toString() {
+        return filename + " " + size + " " + chunkSize;
     }
 }
