@@ -1,12 +1,9 @@
 package client.cli;
 
-import client.File;
+import datamodels.File;
 
 import java.util.ArrayList;
 import client.DownloadFileThread;
-import client.File;
-import client.chunk.SendChunkService;
-import com.google.protobuf.ByteString;
 import core.*;
 import datamodels.FileBean;
 import datamodels.SeederBean;
@@ -16,7 +13,6 @@ import io.grpc.ManagedChannelBuilder;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;

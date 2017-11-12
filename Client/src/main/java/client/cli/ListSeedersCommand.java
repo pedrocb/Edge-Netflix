@@ -8,8 +8,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.File;
-import java.net.ConnectException;
 import java.util.ArrayList;
 
 public class ListSeedersCommand implements Command {

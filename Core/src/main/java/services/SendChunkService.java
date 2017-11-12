@@ -1,10 +1,10 @@
-package client.chunk;
+package services;
 
-import client.File;
 import com.google.protobuf.ByteString;
 import core.SendChunkServiceGrpc;
 import core.Chunk;
 import core.Request;
+import datamodels.File;
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
@@ -28,15 +28,14 @@ public class SendChunkService extends SendChunkServiceGrpc.SendChunkServiceImplB
                 break;
             }
         }
-        file = null;
         if(file == null){
-            System.out.println("Do not have file");
-            responseObserver.onError(new Exception("Do not have file"));
+            System.out.println("Do not have file "+filename);
+            responseObserver.onError(new Exception("Do not have file"+filename));
             return;
         }
         if(!file.hasChunkAt(index)){
-            System.out.println("Do not have chunk");
-            responseObserver.onError(new Exception("Do not have chunk"));
+            System.out.println("Do not have chunk "+index);
+            responseObserver.onError(new Exception("Do not have chunk"+index));
             return;
         }
         int chunkSize = file.getChunkSize();

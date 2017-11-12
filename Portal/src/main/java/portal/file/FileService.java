@@ -47,9 +47,8 @@ public class FileService {
                     MasterSeederServiceBlockingStub stub = MasterSeederServiceGrpc.newBlockingStub(channel);
 
                     System.out.println("Seeder not found. Creating one ...");
-
                     try {
-                        Endpoint info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).build());
+                        Endpoint info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).setChunkSize(file.getChunkSize()).build());
                         SeederBean seeder = Database.registerSeeder(filename, info.getAddress(), info.getPort());
                         file.setSeeder(seeder);
                     } catch (StatusRuntimeException e) {

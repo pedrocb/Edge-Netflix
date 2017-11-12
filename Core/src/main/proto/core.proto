@@ -43,6 +43,7 @@ message Endpoint {
 
 message FileInfo {
     string filename = 1;
+    int32 chunkSize = 2;
 }
 
 message Request {

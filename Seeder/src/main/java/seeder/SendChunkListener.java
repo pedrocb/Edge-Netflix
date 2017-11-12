@@ -1,4 +1,4 @@
-package client.chunk;
+package seeder;
 
 import datamodels.File;
 import io.grpc.Server;
@@ -7,19 +7,18 @@ import services.SendChunkService;
 
 import java.util.ArrayList;
 
-public class Listener extends Thread{
+public class SendChunkListener extends Thread{
     private Server server;
-
-    public int getPort() {
-        return port;
-    }
-
-    private int port;
     private ArrayList<File> files;
 
-    public Listener(ArrayList files){
-       this.files = files;
-       port = selectPort(9000);
+    public SendChunkListener(ArrayList files){
+        this.files = files;
+        try {
+            server = ServerBuilder.forPort(0).addService(new SendChunkService(files)).build();
+            server.start();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -32,28 +31,22 @@ public class Listener extends Thread{
             e.printStackTrace();
         }
     }
-    public int selectPort(int port){
-        try {
-            System.out.println("trying on oport "+port);
-            server = ServerBuilder.forPort(port).addService(new SendChunkService(files)).build();
-            server.start();
-        } catch (Exception e){
-            port = selectPort(port+1);
-        }
-        return port;
-    }
 
     public void startServer () throws Exception{
-        System.out.println("Listener started on port "+port);
+        System.out.println("Listener started on port "+server.getPort());
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 // Use stderr here since the logger may has been reset by its JVM shutdown hook.
                 System.err.println("*** shutting down gRPC server since JVM is shutting down");
-                Listener.this.stopServer();
+                SendChunkListener.this.stopServer();
                 System.err.println("*** server shut down");
             }
         });
+    }
+
+    public int getPort() {
+        return server.getPort();
     }
 
     private void stopServer() {

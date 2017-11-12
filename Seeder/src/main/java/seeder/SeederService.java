@@ -7,15 +7,17 @@ import io.grpc.stub.StreamObserver;
 import java.util.ArrayList;
 
 public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
-    private ArrayList<Endpoint> clients = new ArrayList<>();
+    private ArrayList<Endpoint> clients ;
     private ArrayList<byte[]> chunkHashes;
     private int videoSize;
     private int chunkSize;
 
-    public SeederService(ArrayList<byte[]> chunkHashes, int videoSize, int chunkSize) {
+    public SeederService(ArrayList<byte[]> chunkHashes, int videoSize, int chunkSize, int port) {
         this.chunkHashes = chunkHashes;
         this.videoSize = videoSize;
         this.chunkSize = chunkSize;
+        clients = new ArrayList<>();
+        clients.add(Endpoint.newBuilder().setAddress("localhost").setPort(port).build());
     }
 
     @Override
@@ -30,7 +32,7 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
         for (Endpoint i : clients) {
             builder.addClients(i);
         }
-        int numberOfChunks = (int) Math.ceil((float)videoSize/chunkSize);
+        int numberOfChunks = chunkHashes.size();
         System.out.println("Sending chunks...");
         for(int i = 0; i < numberOfChunks; i++) {
             builder.addHashes(ByteString.copyFrom(chunkHashes.get(i)));

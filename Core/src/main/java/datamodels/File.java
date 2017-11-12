@@ -1,9 +1,10 @@
-package client;
+package datamodels;
 
 import com.google.protobuf.ByteString;
 import core.Endpoint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class File {
     private String filename;
@@ -12,9 +13,9 @@ public class File {
     private int chunkSize;
     private int numChunks;
     private boolean[] hasChunk;
-
     private ArrayList<Endpoint> peers;
     private String[] hashes;
+    private boolean isDownloaded;
 
     public File(String filename, int size, int chunkSize, ArrayList<Endpoint> peers) {
         this.filename = filename;
@@ -24,23 +25,43 @@ public class File {
         this.hasChunk = new boolean[numChunks];
         this.data = new byte[size];
         this.peers = peers;
+        this.isDownloaded = false;
     }
 
-    public boolean isDownloaded(){
+
+    public boolean isDownloaded() {
+        return isDownloaded;
+    }
+
+    public void setDownloaded(boolean downloaded) {
+        isDownloaded = downloaded;
+    }
+
+    public void updateIsDownloaded(){
         for(boolean value : hasChunk ){
             if(!value){
-                return false;
+                 setDownloaded(false);
+                 return;
             }
         }
-        return true;
+        setDownloaded(true);
     }
 
     public boolean hasChunkAt(int index){
         return this.hasChunk[index];
     }
 
-    public void setChunkAt(int index){
-        this.hasChunk[index] = true;
+    public ArrayList<Endpoint> getPeers() {
+        return peers;
+    }
+
+    public void setPeers(ArrayList<Endpoint> peers) {
+        this.peers = peers;
+    }
+
+    public void setChunkAt(int index, boolean value){
+        this.hasChunk[index] = value;
+        updateIsDownloaded();
     }
 
     public String getFilename() {
