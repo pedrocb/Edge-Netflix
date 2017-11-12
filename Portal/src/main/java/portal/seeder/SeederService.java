@@ -1,11 +1,13 @@
 package portal.seeder;
 
+import com.google.api.client.util.Lists;
 import datamodels.FileBean;
 import datamodels.SeederBean;
 import portal.Database;
 
 import javax.swing.plaf.nimbus.State;
 import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.transform.Result;
@@ -23,8 +25,8 @@ public class SeederService {
     @GET
     @Path("list")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response  listServices() {
-        ArrayList<FileBean> result = new ArrayList<>();
+    public Response listServices() {
+        ArrayList<FileBean> result;
         try {
             result = Database.getAllFiles();
             System.out.println(result);
@@ -32,7 +34,10 @@ public class SeederService {
             System.out.println("[ERROR] Can't access database");
             return Response.status(503).build();
         }
-        return Response.status(200).entity(result).build();
+        GenericEntity<ArrayList<FileBean>> entity
+                = new GenericEntity<ArrayList<FileBean>>(Lists.newArrayList(result)) {};
+
+        return Response.status(200).entity(entity).build();
     }
 
     @GET
@@ -40,8 +45,8 @@ public class SeederService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchServices(@QueryParam("keyword") final List<String> keyword) {
         System.out.println(keyword);
-        ArrayList<FileBean> files = new ArrayList<>();
-        ArrayList<FileBean> result = new ArrayList<>();
+        ArrayList<FileBean> files;
+        ArrayList<FileBean> result;
         try {
             files = Database.getAllFiles();
             result = new ArrayList<>(files.stream().filter(file -> file.getKeywords().containsAll(keyword)).collect(Collectors.toList()));
@@ -49,7 +54,9 @@ public class SeederService {
             System.out.println("[ERROR] Can't access database");
             return Response.status(503).build();
         }
-        return Response.status(200).entity(result).build();
+        GenericEntity<ArrayList<FileBean>> entity
+                = new GenericEntity<ArrayList<FileBean>>(Lists.newArrayList(result)) {};
+        return Response.status(200).entity(entity).build();
     }
 
 }
