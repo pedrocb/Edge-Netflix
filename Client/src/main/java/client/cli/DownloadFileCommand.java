@@ -1,6 +1,10 @@
 package client.cli;
 
 import client.File;
+
+import java.util.ArrayList;
+import client.DownloadFileThread;
+import client.File;
 import client.chunk.SendChunkService;
 import com.google.protobuf.ByteString;
 import core.*;
@@ -22,10 +26,14 @@ public class DownloadFileCommand implements Command {
     private String filename;
     private int port;
 
-    public DownloadFileCommand(String filename, int port) {
-       this.filename = filename;
+    private ArrayList<File> files;
+
+    public DownloadFileCommand(String filename, ArrayList<File> files, int port) {
+        this.filename = filename;
+       this.files = files;
        this.port = port;
     }
+
     public void run(WebTarget target) {
         JsonObject body = Json.createObjectBuilder().add("file", filename).build();
 
@@ -40,47 +48,25 @@ public class DownloadFileCommand implements Command {
             System.out.println(fileBean);
             System.out.println(fileBean.getChunkSize());
 
+
             ManagedChannel channel = ManagedChannelBuilder.forTarget(seeder.getEndpoint()).usePlaintext(true).build();
             SeederServiceGrpc.SeederServiceBlockingStub stub = SeederServiceGrpc.newBlockingStub(channel);
             Endpoint endpoint = Endpoint.newBuilder().setAddress("localhost").setPort(port).build();
             JoinResponse joinResponse = stub.joinSwarm(endpoint);
-            File file = new File(filename);
-            downloadChunks(joinResponse);
+
+
+            File file = new File(filename, fileBean.getSize(), fileBean.getChunkSize(), new ArrayList<>(joinResponse.getClientsList()));
+            String[] hashes = new String[file.getNumChunks()];
+            for (int i = 0; i < joinResponse.getHashesList().size(); i++) {
+                hashes[i] = Base64.getEncoder().encodeToString(joinResponse.getHashesList().get(i).toByteArray());
+            }
+            file.setHashes(hashes);
+
+            DownloadFileThread thread = new DownloadFileThread(file);
+            files.add(file);
+            thread.start();
         }
     }
 
-    void downloadChunks(JoinResponse joinResponse, File file){
-        List<Endpoint> neighbours = joinResponse.getClientsList();
-        System.out.println("Got clients:");
-        for (Endpoint i : joinResponse.getClientsList()) {
-            System.out.println(i);
-        }
-        System.out.println("Got hashes:");
-        for (ByteString i : joinResponse.getHashesList()) {
-            System.out.println(Base64.getEncoder().encodeToString(i.toByteArray()));
-        }
-
-        while (!)
-
-
-
-    }
-
-    void downloadChunk(List<Endpoint> neighbours, int chunkIndex){
-        ManagedChannel clientChannel = ManagedChannelBuilder.forTarget("localhost:9000").usePlaintext(true).build();
-        SendChunkServiceGrpc.SendChunkServiceBlockingStub clientStub = SendChunkServiceGrpc.newBlockingStub(clientChannel);
-        Request request = Request.newBuilder().setFilename("tl_512kb.mp4").setIndex(3).build();
-        Chunk recievedChunk;
-        try {
-            recievedChunk = clientStub.requestChunk(request);
-            ByteString chunk = recievedChunk.getData();
-            String message = chunk.toStringUtf8();
-            System.out.println(message);
-        } catch (Exception e) {
-            System.out.println("Could not get Chunk");
-            //e.printStackTrace();
-        }
-
-    }
 
 }

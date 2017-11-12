@@ -19,9 +19,7 @@ public class Client {
             e.printStackTrace();
         }
 
-        File file = new File("tl_512kb.mp4", string, string.length, string.length/3);
         files = new ArrayList<>();
-        files.add(file);
         listener = new Listener(files);
         System.out.println("port!!!"+listener.getPort());
         int port = listener.getPort();
