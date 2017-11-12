@@ -5,6 +5,7 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import services.SendChunkService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Listener extends Thread{
@@ -19,7 +20,13 @@ public class Listener extends Thread{
 
     public Listener(ArrayList files){
        this.files = files;
-       port = selectPort(9000);
+       server = ServerBuilder.forPort(0).addService(new SendChunkService(files)).build();
+        try {
+            server.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        port = server.getPort();
     }
 
     @Override
@@ -31,16 +38,6 @@ public class Listener extends Thread{
         } catch (Exception e){
             e.printStackTrace();
         }
-    }
-    public int selectPort(int port){
-        try {
-            System.out.println("trying on oport "+port);
-            server = ServerBuilder.forPort(port).addService(new SendChunkService(files)).build();
-            server.start();
-        } catch (Exception e){
-            port = selectPort(port+1);
-        }
-        return port;
     }
 
     public void startServer () throws Exception{

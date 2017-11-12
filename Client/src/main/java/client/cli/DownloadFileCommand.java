@@ -1,5 +1,6 @@
 package client.cli;
 
+import client.Client;
 import datamodels.File;
 
 import java.util.ArrayList;
@@ -49,7 +50,8 @@ public class DownloadFileCommand implements Command {
 
                 ManagedChannel channel = ManagedChannelBuilder.forTarget(seeder.getEndpoint()).usePlaintext(true).build();
                 SeederServiceGrpc.SeederServiceBlockingStub stub = SeederServiceGrpc.newBlockingStub(channel);
-                Endpoint endpoint = Endpoint.newBuilder().setAddress("localhost").setPort(port).build();
+                String address = Client.config.getProperty("address", "localhost");
+                Endpoint endpoint = Endpoint.newBuilder().setAddress(address).setPort(port).build();
                 JoinResponse joinResponse = stub.joinSwarm(endpoint);
 
 

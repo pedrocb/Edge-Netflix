@@ -16,17 +16,19 @@ public class CLI {
     private boolean running = true;
     private String input;
     private ArrayList<File> files;
-    private int port;
+    private int listenerPort;
 
-    public CLI(ArrayList files, int port) {
+    public CLI(ArrayList files, int listenerPort) {
         this.files = files;
         Client httpclient = ClientBuilder.newClient()
                 .property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true)
                 .register(MOXyJsonProvider.class);
-        WebTarget target = httpclient.target("http://localhost:9999");
+        String endpoint = client.Client.config.getProperty("portalEndpoint", "http://localhost:9999");
+        System.out.println(endpoint);
+        WebTarget target = httpclient.target(endpoint);
 
         Scanner scanner = new Scanner(System.in);
-        Command command = null;
+        Command command;
 
         while (running) {
             input = scanner.nextLine();
@@ -39,14 +41,14 @@ public class CLI {
                 command.run(target);
             } else if(input.startsWith("download ")) {
                 String filename = input.replace("download ", "");
-                command = new DownloadFileCommand(filename, files, port);
+                command = new DownloadFileCommand(filename, files, listenerPort);
                 command.run(target);
             } else if(input.equals("list files")) {
                 System.out.println(files);
             } else if(input.equals("quit")){
                 running = false;
             } else {
-                System.out.println("Bad usage");
+                System.out.println("Bad usage.");
                 continue;
             }
         }
