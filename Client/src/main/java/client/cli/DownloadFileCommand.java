@@ -29,7 +29,7 @@ public class DownloadFileCommand implements Command {
     private ArrayList<File> files;
 
     public DownloadFileCommand(String filename, ArrayList<File> files, int port) {
-        this.filename = filename;
+       this.filename = filename;
        this.files = files;
        this.port = port;
     }

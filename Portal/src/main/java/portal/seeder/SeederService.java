@@ -13,6 +13,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import portal.Database;
@@ -37,12 +38,13 @@ public class SeederService {
     @GET
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<FileBean> searchServices(@QueryParam("keyword") final String keyword) {
+    public ArrayList<FileBean> searchServices(@QueryParam("keyword") final List<String> keyword) {
+        System.out.println(keyword);
         ArrayList<FileBean> files = new ArrayList<>();
         ArrayList<FileBean> result = new ArrayList<>();
         try {
             files = Database.getAllFiles();
-            result = new ArrayList<>(files.stream().filter(file -> file.getKeywords().contains(keyword)).collect(Collectors.toList()));
+            result = new ArrayList<>(files.stream().filter(file -> file.getKeywords().containsAll(keyword)).collect(Collectors.toList()));
         } catch (SQLException e) {
             System.out.println("Error connecting to database");
         }
