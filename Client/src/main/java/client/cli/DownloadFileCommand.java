@@ -65,6 +65,8 @@ public class DownloadFileCommand implements Command {
                 DownloadFileThread thread = new DownloadFileThread(file);
                 files.add(file);
                 thread.start();
+            } else if(response.getStatus() == 404) {
+                System.out.println("That file does not exist!");
             } else {
                 System.out.println("[Error] There was an error in the portal.");
             }

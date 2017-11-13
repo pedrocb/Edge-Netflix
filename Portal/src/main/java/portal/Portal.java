@@ -58,7 +58,7 @@ public class Portal {
         try {
             jettyServer.start();
 
-            //new HealthCheck().start();
+            new HealthCheck().start();
 
             jettyServer.join();
         } catch (SocketException e) {

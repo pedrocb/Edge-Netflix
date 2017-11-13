@@ -26,7 +26,7 @@ public class Client {
             loadConfig();
             new Client();
         } catch (IOException e) {
-            System.out.println("Missing client.config..");
+            System.out.println("[ERROR] Missing client.config..");
         }
     }
 

@@ -24,8 +24,8 @@ public class MasterSeederService extends MasterSeederServiceGrpc.MasterSeederSer
         Seeder seeder = new Seeder(filename, chunkSize);
         seeders.add(seeder);
         System.out.println("Created seeder on port " + seeder.getPort());
-        // TODO: Change localhost
-        responseObserver.onNext(Endpoint.newBuilder().setPort(seeder.getPort()).setAddress("localhost").build());
+        String address = MasterSeeder.config.getProperty("address", "localhost");
+        responseObserver.onNext(Endpoint.newBuilder().setPort(seeder.getPort()).setAddress(address).build());
         responseObserver.onCompleted();
     }
 }

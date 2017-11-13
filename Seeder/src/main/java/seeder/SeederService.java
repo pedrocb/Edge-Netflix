@@ -17,7 +17,8 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
         this.videoSize = videoSize;
         this.chunkSize = chunkSize;
         clients = new ArrayList<>();
-        clients.add(Endpoint.newBuilder().setAddress("localhost").setPort(port).build());
+        String address = MasterSeeder.config.getProperty("address", "localhost");
+        clients.add(Endpoint.newBuilder().setAddress(address).setPort(port).build());
     }
 
     @Override

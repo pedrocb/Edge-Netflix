@@ -3,13 +3,16 @@ package seeder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 public class MasterSeeder {
     private Server server;
+    public static Properties config;
 
-    public MasterSeeder() {
-        this.server = ServerBuilder.forPort(9998).addService(new MasterSeederService()).build();
+    public MasterSeeder(int port) {
+        this.server = ServerBuilder.forPort(port).addService(new MasterSeederService()).build();
     }
 
     public void start() throws IOException {
@@ -32,14 +35,27 @@ public class MasterSeeder {
     }
 
     public static void main(String[] args) {
-        MasterSeeder ms = new MasterSeeder();
         try {
+            loadConfig();
+        } catch (IOException e) {
+            System.out.println("[Error] Missing masterSeeder.config");
+            return;
+        }
+        int port;
+        try {
+            port = Integer.parseInt(config.getProperty("port", "9998"));
+        } catch (NumberFormatException e){
+            System.out.println("[Error] Port must be an integer");
+            return;
+        }
+        try {
+            MasterSeeder ms = new MasterSeeder(port);
             ms.start();
             ms.blockUntilShutdown();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[Error] Port already in use");
         }
     }
 
@@ -47,5 +63,12 @@ public class MasterSeeder {
         if(server != null) {
             server.awaitTermination();
         }
+    }
+
+    public static void loadConfig() throws IOException {
+        config = new Properties();
+        FileInputStream configFile = new FileInputStream("masterSeeder.config");
+        config.load(configFile);
+        configFile.close();
     }
 }

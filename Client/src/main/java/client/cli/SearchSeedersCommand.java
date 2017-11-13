@@ -24,8 +24,7 @@ public class SearchSeedersCommand implements Command{
                     .request(MediaType.APPLICATION_JSON)
                     .get(Response.class);
             if (response.getStatus() == 200) {
-                ArrayList<FileBean> list = response.readEntity(new GenericType<ArrayList<FileBean>>() {
-                });
+                ArrayList<FileBean> list = response.readEntity(new GenericType<ArrayList<FileBean>>() {});
                 for (FileBean i : list) {
                     System.out.println(i);
                 }

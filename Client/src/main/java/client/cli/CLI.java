@@ -16,7 +16,6 @@ public class CLI {
     private boolean running = true;
     private String input;
     private ArrayList<File> files;
-    private int listenerPort;
 
     public CLI(ArrayList files, int listenerPort) {
         this.files = files;
