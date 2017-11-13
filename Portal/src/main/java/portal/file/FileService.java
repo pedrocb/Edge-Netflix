@@ -13,11 +13,14 @@ import io.grpc.StatusRuntimeException;
 import portal.Database;
 import portal.Portal;
 
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.crypto.Data;
+import java.io.StringReader;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +31,14 @@ public class FileService {
     @Path("download")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response downloadFile(JsonObject fileObject) {
+    public Response downloadFile(String request) {
+        JsonObject fileObject;
+        try {
+            JsonReader jsonReader = Json.createReader(new StringReader(request));
+            fileObject = jsonReader.readObject();
+        } catch (Exception e){
+            return Response.status(402).build();
+        }
         String msAddress = Portal.config.getProperty("msAddress", "localhost");
         int msPort;
         try {

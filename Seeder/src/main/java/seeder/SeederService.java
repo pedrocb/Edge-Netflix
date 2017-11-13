@@ -7,15 +7,11 @@ import io.grpc.stub.StreamObserver;
 import java.util.ArrayList;
 
 public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
-    private ArrayList<Endpoint> clients ;
+    private ArrayList<Endpoint> clients;
     private ArrayList<byte[]> chunkHashes;
-    private int videoSize;
-    private int chunkSize;
 
     public SeederService(ArrayList<byte[]> chunkHashes, int videoSize, int chunkSize, int port) {
         this.chunkHashes = chunkHashes;
-        this.videoSize = videoSize;
-        this.chunkSize = chunkSize;
         clients = new ArrayList<>();
         String address = MasterSeeder.config.getProperty("address", "localhost");
         clients.add(Endpoint.newBuilder().setAddress(address).setPort(port).build());
