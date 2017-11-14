@@ -33,7 +33,16 @@ public class DownloadFileCommand implements Command {
     }
 
     public void run(WebTarget target) {
-        //TODO: Prevent downloading existing file
+        for(File file : files) {
+            if(file.getFilename().equals(filename)) {
+                if(file.isDownloaded()) {
+                    System.out.println("File is already downloaded");
+                } else {
+                    System.out.println("File is already being downloaded");
+                }
+                return;
+            }
+        }
         JsonObject body = Json.createObjectBuilder().add("file", filename).build();
 
         try {
