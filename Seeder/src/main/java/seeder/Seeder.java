@@ -57,7 +57,7 @@ public class Seeder {
                     file.setChunkAt(i, true);
                 }
                 files.add(file);
-                new CleanupThread(messagesFailed, seederService.getClients()).start();
+                new CleanupThread(messagesFailed, seederService.getClients(),server).start();
             }
             calculateChunkHashes();
         }
