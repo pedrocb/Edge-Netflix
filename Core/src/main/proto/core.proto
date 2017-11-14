@@ -10,6 +10,7 @@ service MasterSeederService {
 
 service SeederService {
     rpc joinSwarm(Endpoint) returns (JoinResponse);
+    rpc updateList(Endpoint) returns (ClientList);
     rpc healthCheck(Empty) returns (HealthResponse);
 }
 
@@ -19,6 +20,10 @@ message HealthResponse {
         NOT_OK = 1;
     }
     Status status = 1;
+}
+
+message ClientList {
+    repeated Endpoint clients = 1;
 }
 
 message Empty {

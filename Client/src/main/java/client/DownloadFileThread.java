@@ -32,8 +32,8 @@ public class DownloadFileThread extends Thread {
         Endpoint endpoint = Endpoint.newBuilder().setAddress(address).setPort(port).build();
         JoinResponse joinResponse = stub.joinSwarm(endpoint);
 
-
         file.setPeers(new ArrayList<>(joinResponse.getClientsList()));
+        System.out.println(file.getPeers());
         String[] hashes = new String[file.getNumChunks()];
         for (int i = 0; i < joinResponse.getHashesList().size(); i++) {
             hashes[i] = Base64.getEncoder().encodeToString(joinResponse.getHashesList().get(i).toByteArray());

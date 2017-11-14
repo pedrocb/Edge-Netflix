@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 
 
 public class Seeder {
@@ -25,6 +26,8 @@ public class Seeder {
     private ArrayList<byte[]> hashes;
     private String filename;
     private int chunkSize;
+    private HashMap<Endpoint, Integer> messagesFailed;
+    private SeederService seederService;
     public boolean isOk;
 
     public Seeder(String filename, int chunkSize) {
@@ -32,7 +35,8 @@ public class Seeder {
         this.chunkSize = chunkSize;
         this.files = new ArrayList<>();
         this.hashes = new ArrayList<>();
-        SeederService seederService = new SeederService(hashes);
+        this.messagesFailed = new HashMap<>();
+        this.seederService = new SeederService(hashes, messagesFailed);
         int minPort = Integer.parseInt(MasterSeeder.config.getProperty("minPort", "9985"));
         int maxPort = Integer.parseInt(MasterSeeder.config.getProperty("maxPort", "9995"));
 
@@ -53,6 +57,7 @@ public class Seeder {
                     file.setChunkAt(i, true);
                 }
                 files.add(file);
+                new CleanupThread(messagesFailed, seederService.getClients()).start();
             }
             calculateChunkHashes();
         }
