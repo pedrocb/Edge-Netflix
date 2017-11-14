@@ -17,8 +17,10 @@ public class DownloadFileThread extends Thread {
     private int port;
     private File file;
     private String seederEndpoint;
+    private ArrayList<File> files;
 
-    public DownloadFileThread(File file, String seederEndpoint, int port) {
+    public DownloadFileThread(File file, String seederEndpoint, int port, ArrayList<File> files) {
+        this.files = files;
         this.file = file;
         this.seederEndpoint = seederEndpoint;
         this.port = port;
@@ -30,7 +32,14 @@ public class DownloadFileThread extends Thread {
         SeederServiceGrpc.SeederServiceBlockingStub stub = SeederServiceGrpc.newBlockingStub(channel);
         String address = Client.config.getProperty("address", "localhost");
         Endpoint endpoint = Endpoint.newBuilder().setAddress(address).setPort(port).build();
-        JoinResponse joinResponse = stub.joinSwarm(endpoint);
+        JoinResponse joinResponse = null;
+        try{
+            joinResponse = stub.joinSwarm(endpoint);
+        } catch (Exception e){
+            System.out.println("Could not connect to seeder");
+            files.remove(file);
+            return;
+        }
 
         file.setPeers(new ArrayList<>(joinResponse.getClientsList()));
         System.out.println(file.getPeers());
@@ -49,20 +58,32 @@ public class DownloadFileThread extends Thread {
         while (!file.isDownloaded()) {
             int chosenMissingIndex = (int) (Math.random() * missingChunksIndex.size());
             int chunkIndex = missingChunksIndex.get(chosenMissingIndex);
-            Endpoint neighbour = file.getPeers().get((int) (Math.random() * file.getPeers().size()));
-            try {
-                System.out.println("Starting download of chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
-                downloadChunk(neighbour, chunkIndex);
-                System.out.println("Got chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
-                missingChunksIndex.remove(chosenMissingIndex);
-            } catch (Exception e) {
-                System.out.println("Could not get chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
+            ArrayList<Endpoint> neighbours = (ArrayList<Endpoint>) file.getPeers().clone();
+            boolean fetched = false;
+            while (!fetched && !neighbours.isEmpty()) {
+                Endpoint neighbour = neighbours.get((int) (Math.random() * neighbours.size()));
+                try {
+                    System.out.println("Starting download of chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
+                    downloadChunk(neighbour, chunkIndex);
+                    System.out.println("Got chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
+                    missingChunksIndex.remove(chosenMissingIndex);
+                    fetched = true;
+                } catch (Exception e) {
+                    System.out.println("Could not get chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
+                    neighbours.remove(neighbour);
+                }
+            }
+            if(neighbours.isEmpty()){
+                System.out.println("Error acessing seeder.");
+                files.remove(file);
+                return;
             }
         }
         System.out.println(calculateChunkHash(file.getData()));
         System.out.println(file.getData().length);
         if (!calculateChunkHash(file.getData()).equals(file.getFileHash())) {
             System.out.println("File hash doesn't match ");
+            files.remove(files);
             return;
         }
         System.out.println("File " + file.getFilename() + " finished download!");
@@ -75,8 +96,12 @@ public class DownloadFileThread extends Thread {
             file.setPath("video-files/" + file.getFilename());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            System.out.println("Was not able to write file");
+            files.remove(file);
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Was not able to write file");
+            files.remove(file);
         }
     }
 
