@@ -60,6 +60,7 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
 
     @Override
     public void updateList(Endpoint request, StreamObserver<ClientList> responseObserver) {
+        System.out.println("ping "+request);
         ClientList.Builder builder = ClientList.newBuilder();
         messagesFailed.put(request, 0);
         synchronized (clients) {

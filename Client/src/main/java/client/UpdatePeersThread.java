@@ -1,5 +1,6 @@
 package client;
 
+import com.sun.tools.corba.se.idl.ExceptionEntry;
 import core.*;
 import datamodels.File;
 import io.grpc.ManagedChannel;
@@ -24,10 +25,13 @@ public class UpdatePeersThread extends Thread {
         String address = Client.config.getProperty("address", "localhost");
         Endpoint endpoint = Endpoint.newBuilder().setAddress(address).setPort(port).build();
         while (true) {
-            ClientList list = stub.updateList(endpoint);
-            ArrayList<Endpoint> peers = new ArrayList<>(list.getClientsList());
-            peers.removeIf(endpoint1 -> endpoint1.getAddress().equals(address) && endpoint1.getPort() == port);
-            file.setPeers(peers);
+            try {
+                ClientList list = stub.updateList(endpoint);
+                ArrayList<Endpoint> peers = new ArrayList<>(list.getClientsList());
+                peers.removeIf(endpoint1 -> endpoint1.getAddress().equals(address) && endpoint1.getPort() == port);
+                file.setPeers(peers);
+            } catch (Exception e) {
+            }
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {

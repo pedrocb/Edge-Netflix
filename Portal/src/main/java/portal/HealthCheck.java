@@ -25,35 +25,43 @@ public class HealthCheck extends Thread {
     @Override
     public void run() {
         System.out.println("Health Check started...");
-        HashMap<String, SeederServiceGrpc.SeederServiceBlockingStub> stubs = new HashMap<>();
+        HashMap<String, Integer> messagesFailed = new HashMap<>();
         ArrayList<SeederBean> seeders = null;
         while (running) {
+            ArrayList<SeederBean> removedSeeders = new ArrayList<>();
             try {
                 seeders = Database.getAllSeeders();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            for(SeederBean seeder : seeders) {
-                System.out.println("Checking " + seeder.getEndpoint());
-                SeederServiceGrpc.SeederServiceBlockingStub stub = stubs.get(seeder.getEndpoint());
-                if(stub== null) {
-                    ManagedChannel channel = ManagedChannelBuilder.forTarget(seeder.getEndpoint()).usePlaintext(true).build();
-                    stub = SeederServiceGrpc.newBlockingStub(channel);
-                    stubs.put(seeder.getEndpoint(), stub);
+            for (SeederBean seeder : seeders) {
+                ManagedChannel channel = ManagedChannelBuilder.forTarget(seeder.getEndpoint()).usePlaintext(true).build();
+                SeederServiceGrpc.SeederServiceBlockingStub stub = SeederServiceGrpc.newBlockingStub(channel);
+                if (!messagesFailed.containsKey(seeder.getEndpoint())) {
+                    messagesFailed.put(seeder.getEndpoint(), 0);
                 }
                 try {
                     HealthResponse response = stub.withDeadlineAfter(10, TimeUnit.SECONDS).healthCheck(Empty.getDefaultInstance());
+                    messagesFailed.replace(seeder.getEndpoint(), 0);
                     System.out.println(response);
                 } catch (StatusRuntimeException exc) {
                     try {
-                        System.out.println("Deleting seeder " + seeder + seeder.getId());
-                        Database.removeSeeder(seeder.getId());
+                        if (messagesFailed.get(seeder.getEndpoint()) >= 3) {
+                            System.out.println("Deleting seeder " + seeder + seeder.getId());
+                            Database.removeSeeder(seeder.getId());
+                            removedSeeders.add(seeder);
+                        }
+                        messagesFailed.replace(seeder.getEndpoint(), messagesFailed.get(seeder.getEndpoint()) + 1);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 }
 
             }
+            for (SeederBean s : removedSeeders) {
+                messagesFailed.remove(s.getEndpoint());
+            }
+
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
