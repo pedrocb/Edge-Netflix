@@ -19,6 +19,7 @@ public class SendChunkService extends SendChunkServiceGrpc.SendChunkServiceImplB
 
     @Override
     public void requestChunk(Request request, StreamObserver responseObserver){
+        System.out.println("Received chunk request");
         String filename = request.getFilename();
         int index = request.getIndex();
         File file = null;

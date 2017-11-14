@@ -22,6 +22,7 @@ public class MasterSeederService extends MasterSeederServiceGrpc.MasterSeederSer
         String filename = request.getFilename();
         int chunkSize = request.getChunkSize();
         Seeder seeder = new Seeder(filename, chunkSize);
+        //TODO: Check if seeder was created with success
         seeders.add(seeder);
         System.out.println("Created seeder on port " + seeder.getPort());
         String address = MasterSeeder.config.getProperty("address", "localhost");

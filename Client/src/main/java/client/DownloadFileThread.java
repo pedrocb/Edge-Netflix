@@ -43,6 +43,7 @@ public class DownloadFileThread extends Thread {
                 System.out.println("Could not get chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
             }
         }
+        //TODO: Verify file hash
         System.out.println("File " + file.getFilename() + " finished download!");
         try {
             //TODO: File path

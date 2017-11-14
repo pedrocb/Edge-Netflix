@@ -10,9 +10,12 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
     private ArrayList<Endpoint> clients;
     private ArrayList<byte[]> chunkHashes;
 
-    public SeederService(ArrayList<byte[]> chunkHashes, int videoSize, int chunkSize, int port) {
+    public SeederService(ArrayList<byte[]> chunkHashes, int videoSize, int chunkSize) {
         this.chunkHashes = chunkHashes;
         clients = new ArrayList<>();
+    }
+
+    public void addSeederToClients(int port) {
         String address = MasterSeeder.config.getProperty("address", "localhost");
         clients.add(Endpoint.newBuilder().setAddress(address).setPort(port).build());
     }

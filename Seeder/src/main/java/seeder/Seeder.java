@@ -8,6 +8,7 @@ import core.Endpoint;
 import datamodels.File;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import services.SendChunkService;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -33,20 +34,32 @@ public class Seeder {
         files = new ArrayList<>();
         files.add(file);
         ArrayList<byte[]> chunkHashes = calculateChunkHashes();
-        SendChunkListener sendChunkListener = new SendChunkListener(files);
-        sendChunkListener.start();
-        int listeningPort = sendChunkListener.getPort();
-        server = ServerBuilder.forPort(0).addService(new SeederService(chunkHashes, fileContent.length, file.getChunkSize(), listeningPort)).build();
-        try {
-            server.start();
-        } catch (IOException e) {
-            System.out.println("Failed to start Seeder");
-            e.printStackTrace();
-        }
+
+        SeederService seederService = new SeederService(chunkHashes, fileContent.length, file.getChunkSize());
+        int minPort = Integer.parseInt(MasterSeeder.config.getProperty("minPort", "9985"));
+        int maxPort = Integer.parseInt(MasterSeeder.config.getProperty("maxPort", "9995"));
+
+        startServer(seederService, maxPort, minPort);
+        System.out.println("Started on port " + getPort());
+        //TODO: Desligar Seeder
+        //TODO: Retirar clients desligados
     }
 
-    public void start() {
-
+    public void startServer(SeederService seederService, int maxPort, int port) {
+        server = ServerBuilder.forPort(port)
+                .addService(seederService)
+                .addService(new SendChunkService(files))
+                .build();
+        try {
+            server.start();
+            seederService.addSeederToClients(port);
+        } catch (IOException e) {
+            System.out.println(port + "failed");
+            if(port < maxPort) {
+                System.out.println("Trying port " + (port + 1));
+                startServer(seederService, maxPort, port + 1);
+            }
+        }
     }
 
     public int getPort() {

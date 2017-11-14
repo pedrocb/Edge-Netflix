@@ -33,6 +33,7 @@ public class DownloadFileCommand implements Command {
     }
 
     public void run(WebTarget target) {
+        //TODO: Prevent downloading existing file
         JsonObject body = Json.createObjectBuilder().add("file", filename).build();
 
         try {
