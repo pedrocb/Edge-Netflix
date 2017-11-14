@@ -39,6 +39,7 @@ public class DownloadFileThread extends Thread {
             hashes[i] = Base64.getEncoder().encodeToString(joinResponse.getHashesList().get(i).toByteArray());
         }
         file.setHashes(hashes);
+        file.setFileHash(Base64.getEncoder().encodeToString(joinResponse.getFileHash().toByteArray()));
 
         System.out.println("Starting " + file.getFilename() + " download!");
         ArrayList<Integer> missingChunksIndex = new ArrayList<>();
@@ -58,7 +59,12 @@ public class DownloadFileThread extends Thread {
                 System.out.println("Could not get chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
             }
         }
-        //TODO: Verify file hash
+        System.out.println(calculateChunkHash(file.getData()));
+        System.out.println(file.getData().length);
+        if (!calculateChunkHash(file.getData()).equals(file.getFileHash())) {
+            System.out.println("File hash doesn't match ");
+            return;
+        }
         System.out.println("File " + file.getFilename() + " finished download!");
         try {
             //TODO: File path

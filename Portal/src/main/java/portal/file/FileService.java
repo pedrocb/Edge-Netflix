@@ -33,7 +33,7 @@ public class FileService {
         try {
             JsonReader jsonReader = Json.createReader(new StringReader(request));
             fileObject = jsonReader.readObject();
-        } catch (Exception e){
+        } catch (Exception e) {
             return Response.status(402).build();
         }
         String msAddress = Portal.config.getProperty("msAddress", "localhost");
@@ -46,34 +46,38 @@ public class FileService {
         }
 
         String filename = fileObject.getString("file");
-        try {
-            FileBean file = Database.getFile(filename);
-            if (file != null) {
-                if (file.getSeeder() == null) {
-                    ManagedChannel channel = ManagedChannelBuilder.forAddress(msAddress, msPort).usePlaintext(true).build();
-                    MasterSeederServiceBlockingStub stub = MasterSeederServiceGrpc.newBlockingStub(channel);
+        synchronized (Database.connection) {
+            System.out.println("Getting file");
+            try {
+                FileBean file = Database.getFile(filename);
+                if (file != null) {
+                    if (file.getSeeder() == null) {
+                        ManagedChannel channel = ManagedChannelBuilder.forAddress(msAddress, msPort).usePlaintext(true).build();
+                        MasterSeederServiceBlockingStub stub = MasterSeederServiceGrpc.newBlockingStub(channel);
 
-                    System.out.println("Seeder not found. Creating one ...");
-                    try {
-                        Endpoint info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).setChunkSize(file.getChunkSize()).build());
-                        SeederBean seeder = Database.registerSeeder(filename, info.getAddress(), info.getPort());
-                        file.setSeeder(seeder);
-                    } catch (StatusRuntimeException e) {
-                        if(e.getStatus().getCode() == Status.Code.RESOURCE_EXHAUSTED) {
-                            System.out.println("[ERROR]: Can't create new Seeder");
-                        } else {
-                            System.out.println("[ERROR]: Can't access Master Seeder");
+                        System.out.println("Seeder not found. Creating one ...");
+                        try {
+                            Endpoint info = stub.createSeeder(FileInfo.newBuilder().setFilename(filename).setChunkSize(file.getChunkSize()).build());
+                            SeederBean seeder = Database.registerSeeder(filename, info.getAddress(), info.getPort());
+                            file.setSeeder(seeder);
+                        } catch (StatusRuntimeException e) {
+                            if (e.getStatus().getCode() == Status.Code.RESOURCE_EXHAUSTED) {
+                                System.out.println("[ERROR]: Can't create new Seeder");
+                            } else {
+                                System.out.println("[ERROR]: Can't access Master Seeder");
+                            }
+                            return Response.status(503).build();
                         }
-                        return Response.status(503).build();
                     }
+                    return Response.status(200).entity(file).build();
+                } else {
+                    return Response.status(404).build();
                 }
-                return Response.status(200).entity(file).build();
-            } else {
-                return Response.status(404).build();
+
+            } catch (SQLException e) {
+                System.out.println("[ERROR]: Can't access database.");
+                return Response.status(503).build();
             }
-        } catch (SQLException e) {
-            System.out.println("[ERROR]: Can't access database.");
-            return Response.status(503).build();
         }
     }
 }

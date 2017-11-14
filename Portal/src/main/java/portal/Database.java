@@ -13,7 +13,7 @@ public class Database {
                         + "socketFactory=com.google.cloud.sql.mysql.SocketFactory",
                 "edgeNetflix",
                 "groupc-179216:europe-west1:einstance-sql");
-    private static Connection connection = null;
+    public static Connection connection = null;
 
     public static void setupConnection() throws SQLException {
         String user = Portal.config.getProperty("dbUser", "root");
