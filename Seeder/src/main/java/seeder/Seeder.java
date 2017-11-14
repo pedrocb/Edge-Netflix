@@ -25,6 +25,7 @@ public class Seeder {
     private ArrayList<byte[]> hashes;
     private String filename;
     private int chunkSize;
+    public boolean isOk;
 
     public Seeder(String filename, int chunkSize) {
         this.filename = filename;
@@ -35,8 +36,7 @@ public class Seeder {
         int minPort = Integer.parseInt(MasterSeeder.config.getProperty("minPort", "9985"));
         int maxPort = Integer.parseInt(MasterSeeder.config.getProperty("maxPort", "9995"));
 
-        startServer(seederService, maxPort, minPort);
-        System.out.println("Started on port " + getPort());
+        isOk = startServer(seederService, maxPort, minPort);
         //TODO: Desligar Seeder
         //TODO: Retirar clients desligados
     }
@@ -58,7 +58,7 @@ public class Seeder {
         }
     }
 
-    public void startServer(SeederService seederService, int maxPort, int port) {
+    public boolean startServer(SeederService seederService, int maxPort, int port) {
         server = ServerBuilder.forPort(port)
                 .addService(seederService)
                 .addService(new SendChunkService(files))
@@ -66,11 +66,14 @@ public class Seeder {
         try {
             server.start();
             seederService.addSeederToClients(port);
+            return true;
         } catch (IOException e) {
             System.out.println(port + "failed");
             if (port < maxPort) {
                 System.out.println("Trying port " + (port + 1));
-                startServer(seederService, maxPort, port + 1);
+                return startServer(seederService, maxPort, port + 1);
+            } else {
+                return false;
             }
         }
     }

@@ -1,5 +1,7 @@
 package seeder;
 
+import core.HealthResponse;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import core.FileInfo;
 import core.MasterSeederServiceGrpc;
@@ -22,13 +24,14 @@ public class MasterSeederService extends MasterSeederServiceGrpc.MasterSeederSer
         String filename = request.getFilename();
         int chunkSize = request.getChunkSize();
         Seeder seeder = new Seeder(filename, chunkSize);
-        //TODO: Check if seeder was created with success
         seeders.add(seeder);
-        System.out.println("Created seeder on port " + seeder.getPort());
         String address = MasterSeeder.config.getProperty("address", "localhost");
-        responseObserver.onNext(Endpoint.newBuilder().setPort(seeder.getPort()).setAddress(address).build());
-        responseObserver.onCompleted();
-
-        seeder.setup();
+        if(seeder.isOk) {
+            responseObserver.onNext(Endpoint.newBuilder().setPort(seeder.getPort()).setAddress(address).build());
+            responseObserver.onCompleted();
+            seeder.setup();
+        } else {
+            responseObserver.onError(Status.RESOURCE_EXHAUSTED.withCause(new Exception("All ports in use")).asException());
+        }
     }
 }
