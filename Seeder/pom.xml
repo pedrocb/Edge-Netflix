@@ -32,7 +32,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        seeder.Seeder
+                                        seeder.MasterSeeder
                                     </mainClass>
                                 </manifest>
                             </archive>

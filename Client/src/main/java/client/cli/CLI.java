@@ -1,6 +1,7 @@
 package client.cli;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -43,7 +44,13 @@ public class CLI {
                 command = new DownloadFileCommand(filename, files, listenerPort);
                 command.run(target);
             } else if(input.equals("list files")) {
-                System.out.println(files);
+                listFiles();
+            } else if(input.startsWith("info ")) {
+                String filename = input.replace("info ", "");
+                infoFile(filename);
+            } else if(input.startsWith("play ")) {
+                String filename = input.replace("play ", "");
+                playFile(filename);
             } else if(input.equals("quit")){
                 running = false;
             } else {
@@ -51,5 +58,45 @@ public class CLI {
                 continue;
             }
         }
+    }
+
+    private void playFile(String filename) {
+        File file = getFile(filename);
+        if(file != null) {
+            ProcessBuilder processBuilder = new ProcessBuilder("ffplay", file.getPath());
+            try {
+                processBuilder.start();
+            } catch (IOException e) {
+                System.out.println("There was a problem playing the video.");
+            }
+        }
+        else {
+            System.out.println("You don't have a file with that name.");
+        }
+    }
+
+    private void infoFile(String filename) {
+        File file = getFile(filename);
+        if(file != null) {
+            System.out.println(file.info());
+        }
+        else {
+            System.out.println("You don't have a file with that name.");
+        }
+    }
+
+    private void listFiles() {
+        for (File file : files) {
+            System.out.println(file.basicInfo());
+        }
+    }
+
+    private File getFile(String filename) {
+        for(File file : files) {
+            if(file.getFilename().equals(filename)) {
+                return file;
+            }
+        }
+        return null;
     }
 }

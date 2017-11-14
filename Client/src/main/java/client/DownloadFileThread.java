@@ -45,10 +45,12 @@ public class DownloadFileThread extends Thread {
         }
         System.out.println("File " + file.getFilename() + " finished download!");
         try {
+            //TODO: File path
             FileOutputStream fos = new FileOutputStream("video-files/"+file.getFilename());
             fos.write(file.getData());
             fos.close();
             System.out.println("File written.");
+            file.setPath("video-files/"+file.getFilename());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

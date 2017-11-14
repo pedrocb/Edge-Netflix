@@ -45,16 +45,24 @@ public class Seeder {
         }
     }
 
+    public void start() {
+
+    }
+
     public int getPort() {
         return server.getPort();
     }
 
     public byte [] downloadFile(String bucketName, String fileName) {
-        Storage storage = StorageOptions.getDefaultInstance().getService();
+        System.out.println("Print 1");
+        Storage storage = StorageOptions.newBuilder().build().getService();
+        System.out.println("Print 2");
         Blob blob = storage.get(bucketName, fileName);
+        System.out.println("Print 3");
         if (blob == null) {
             return null;
         }
+        System.out.println("Print 4");
         return blob.getContent();
     }
 
