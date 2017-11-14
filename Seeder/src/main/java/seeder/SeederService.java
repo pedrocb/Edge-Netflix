@@ -30,20 +30,20 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
     @Override
     public void joinSwarm(Endpoint request, StreamObserver<JoinResponse> responseObserver) {
         JoinResponse.Builder builder = JoinResponse.newBuilder();
+        System.out.println("Waiting for hashes");
         for (Endpoint i : clients) {
             builder.addClients(i);
         }
-        System.out.println("Waiting for hashes");
+        clients.add(request);
         synchronized (chunkHashes) {
-            System.out.println("Here they are");
-            int numberOfChunks = chunkHashes.size();
-            System.out.println("Sending chunks...");
-            for (int i = 0; i < numberOfChunks; i++) {
+        }
+        System.out.println("Here they are");
+        int numberOfChunks = chunkHashes.size();
+        System.out.println("Sending chunks...");
+        for (int i = 0; i < numberOfChunks; i++) {
                 builder.addHashes(ByteString.copyFrom(chunkHashes.get(i)));
             }
-        }
         responseObserver.onNext(builder.build());
         responseObserver.onCompleted();
-        clients.add(request);
     }
 }

@@ -2,14 +2,11 @@ package portal.file;
 
 import datamodels.FileBean;
 import datamodels.SeederBean;
-import io.grpc.Grpc;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.*;
 import core.FileInfo;
 import core.MasterSeederServiceGrpc;
 import core.MasterSeederServiceGrpc.MasterSeederServiceBlockingStub;
 import core.Endpoint;
-import io.grpc.StatusRuntimeException;
 import portal.Database;
 import portal.Portal;
 
@@ -62,7 +59,11 @@ public class FileService {
                         SeederBean seeder = Database.registerSeeder(filename, info.getAddress(), info.getPort());
                         file.setSeeder(seeder);
                     } catch (StatusRuntimeException e) {
-                        System.out.println("[ERROR]: Can't access Master Seeder");
+                        if(e.getStatus().getCode() == Status.Code.RESOURCE_EXHAUSTED) {
+                            System.out.println("[ERROR]: Can't create new Seeder");
+                        } else {
+                            System.out.println("[ERROR]: Can't access Master Seeder");
+                        }
                         return Response.status(503).build();
                     }
                 }
