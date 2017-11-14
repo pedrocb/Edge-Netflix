@@ -62,7 +62,7 @@ public class DownloadFileCommand implements Command {
 
 
                 File file = new File(filename, fileBean.getSize(), fileBean.getChunkSize(), new ArrayList<>());
-                DownloadFileThread thread = new DownloadFileThread(file, seeder.getEndpoint(), port);
+                DownloadFileThread thread = new DownloadFileThread(file, seeder.getEndpoint(), port, files);
                 synchronized (files) {
                     files.add(file);
                 }
