@@ -29,54 +29,78 @@ public class File {
     }
 
     public boolean isDownloaded() {
-        return isDownloaded;
+        synchronized (this) {
+            return isDownloaded;
+        }
     }
 
     public void setDownloaded(boolean downloaded) {
-        isDownloaded = downloaded;
+        synchronized (this) {
+            isDownloaded = downloaded;
+        }
     }
 
     public void updateIsDownloaded() {
-        for (boolean value : hasChunk) {
-            if (!value) {
-                setDownloaded(false);
-                return;
+        synchronized (this) {
+            for (boolean value : hasChunk) {
+                if (!value) {
+                    isDownloaded = false;
+                    return;
+                }
             }
+            isDownloaded = true;
         }
-        setDownloaded(true);
     }
 
     public boolean hasChunkAt(int index) {
-        return this.hasChunk[index];
+        synchronized (this) {
+            return this.hasChunk[index];
+        }
     }
 
     public ArrayList<Endpoint> getPeers() {
-        return peers;
+        synchronized (this) {
+            return peers;
+        }
     }
 
     public void setPeers(ArrayList<Endpoint> peers) {
-        this.peers = peers;
+        synchronized (this) {
+            this.peers = peers;
+        }
     }
 
     public void setChunkAt(int index, boolean value) {
-        this.hasChunk[index] = value;
-        updateIsDownloaded();
+        synchronized (this) {
+            this.hasChunk[index] = value;
+            updateIsDownloaded();
+        }
     }
 
     public String getFilename() {
-        return filename;
+        synchronized (this) {
+            return filename;
+        }
     }
 
     public void setFilename(String filename) {
-        this.filename = filename;
+        synchronized (this) {
+            this.filename = filename;
+        }
+
     }
 
     public byte[] getData() {
-        return data;
+        synchronized (this) {
+            return data;
+        }
     }
 
+
     public void setData(byte[] data) {
-        this.data = data;
+        synchronized (this) {
+            this.data = data;
+        }
     }
 
     public int getSize() {
@@ -84,84 +108,114 @@ public class File {
     }
 
     public void setSize(int size) {
-        this.size = size;
+        synchronized (this) {
+            this.size = size;
+        }
     }
 
     public int getChunkSize() {
-        return chunkSize;
+        synchronized (this) {
+            return chunkSize;
+        }
     }
 
     public void setChunkSize(int chunkSize) {
-        this.chunkSize = chunkSize;
+        synchronized (this) {
+            this.chunkSize = chunkSize;
+        }
     }
 
     public int getNumChunks() {
-        return numChunks;
+        synchronized (this) {
+            return numChunks;
+        }
     }
 
     public void setNumChunks(int numChunks) {
-        this.numChunks = numChunks;
+        synchronized (this) {
+            this.numChunks = numChunks;
+        }
     }
 
     public boolean[] getHasChunk() {
-        return hasChunk;
+        synchronized (this) {
+            return hasChunk;
+        }
     }
 
     public void setHasChunk(boolean[] hasChunk) {
-        this.hasChunk = hasChunk;
+        synchronized (this) {
+            this.hasChunk = hasChunk;
+        }
     }
 
     public String[] getHashes() {
-        return hashes;
+        synchronized (this) {
+            return hashes;
+        }
     }
 
     public void setHashes(String[] hashes) {
-        this.hashes = hashes;
+        synchronized (this) {
+            this.hashes = hashes;
+        }
     }
 
     public String basicInfo() {
-        String result = filename + " " + (isDownloaded ? "Downloaded." : "Downloading...");
-        return result;
+        synchronized (this) {
+            String result = filename + " " + (isDownloaded ? "Downloaded." : "Downloading...");
+            return result;
+        }
     }
 
     private int currentSize() {
-        if (isDownloaded) {
-            return size;
-        }
-        int count = 0;
-        for (boolean i : hasChunk) {
-            if (i) {
-                count++;
+        synchronized (this) {
+            if (isDownloaded) {
+                return size;
             }
+            int count = 0;
+            for (boolean i : hasChunk) {
+                if (i) {
+                    count++;
+                }
+            }
+            return count * chunkSize;
         }
-        return count * chunkSize;
     }
 
     public String info() {
-        String result = basicInfo() + "\n";
-        result += "Video size (in bytes): " + currentSize() + "/" + size + "\n";
-        if (isDownloaded) {
-            result += "Full path: " + path + "\n";
-        } else {
-            result += "Peers: \n";
-            for (Endpoint peer : peers) {
-                result += peer.getAddress() + ":" + peer.getPort() + "\n";
+        synchronized (this) {
+            String result = basicInfo() + "\n";
+            result += "Video size (in bytes): " + currentSize() + "/" + size + "\n";
+            if (isDownloaded) {
+                result += "Full path: " + path + "\n";
+            } else {
+                result += "Peers: \n";
+                for (Endpoint peer : peers) {
+                    result += peer.getAddress() + ":" + peer.getPort() + "\n";
+                }
             }
+            return result;
         }
-        return result;
     }
 
     @Override
     public String toString() {
-        return filename + " " + size + " " + chunkSize;
+        synchronized (this) {
+            return filename + " " + size + " " + chunkSize;
+        }
     }
 
     public void setPath(String path) {
-        this.path = path;
+        synchronized (this) {
+            this.path = path;
+        }
     }
 
     public String getPath() {
-        return path;
+        synchronized (this) {
+            return path;
+        }
     }
 
 }

@@ -4,6 +4,7 @@ import client.Client;
 import datamodels.File;
 
 import java.util.ArrayList;
+
 import client.DownloadFileThread;
 import core.*;
 import datamodels.FileBean;
@@ -27,20 +28,22 @@ public class DownloadFileCommand implements Command {
     private ArrayList<File> files;
 
     public DownloadFileCommand(String filename, ArrayList<File> files, int port) {
-       this.filename = filename;
-       this.files = files;
-       this.port = port;
+        this.filename = filename;
+        this.files = files;
+        this.port = port;
     }
 
     public void run(WebTarget target) {
-        for(File file : files) {
-            if(file.getFilename().equals(filename)) {
-                if(file.isDownloaded()) {
-                    System.out.println("File is already downloaded");
-                } else {
-                    System.out.println("File is already being downloaded");
+        synchronized (files) {
+            for (File file : files) {
+                if (file.getFilename().equals(filename)) {
+                    if (file.isDownloaded()) {
+                        System.out.println("File is already downloaded");
+                    } else {
+                        System.out.println("File is already being downloaded");
+                    }
+                    return;
                 }
-                return;
             }
         }
         JsonObject body = Json.createObjectBuilder().add("file", filename).build();
@@ -60,9 +63,11 @@ public class DownloadFileCommand implements Command {
 
                 File file = new File(filename, fileBean.getSize(), fileBean.getChunkSize(), new ArrayList<>());
                 DownloadFileThread thread = new DownloadFileThread(file, seeder.getEndpoint(), port);
-                files.add(file);
+                synchronized (files) {
+                    files.add(file);
+                }
                 thread.start();
-            } else if(response.getStatus() == 404) {
+            } else if (response.getStatus() == 404) {
                 System.out.println("That file does not exist!");
             } else {
                 System.out.println("[Error] There was an error in the portal.");

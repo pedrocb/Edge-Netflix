@@ -30,8 +30,11 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
     @Override
     public void joinSwarm(Endpoint request, StreamObserver<JoinResponse> responseObserver) {
         JoinResponse.Builder builder = JoinResponse.newBuilder();
-        clients.add(request);
         System.out.println("Waiting for hashes");
+        for (Endpoint i : clients) {
+            builder.addClients(i);
+        }
+        clients.add(request);
         synchronized (chunkHashes) {
         }
         System.out.println("Here they are");
@@ -40,9 +43,6 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
         for (int i = 0; i < numberOfChunks; i++) {
                 builder.addHashes(ByteString.copyFrom(chunkHashes.get(i)));
             }
-        for (Endpoint i : clients) {
-            builder.addClients(i);
-        }
         responseObserver.onNext(builder.build());
         responseObserver.onCompleted();
     }
