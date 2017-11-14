@@ -41,8 +41,6 @@ public class Seeder {
         int maxPort = Integer.parseInt(MasterSeeder.config.getProperty("maxPort", "9995"));
 
         isOk = startServer(seederService, maxPort, minPort);
-        //TODO: Desligar Seeder
-        //TODO: Retirar clients desligados
     }
 
     public void setup() {
