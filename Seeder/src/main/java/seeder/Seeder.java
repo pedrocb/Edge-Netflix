@@ -46,9 +46,7 @@ public class Seeder {
     public void setup() {
         synchronized (hashes) {
             synchronized (files) {
-                System.out.println("Starting " + filename + " download.");
                 byte[] fileContent = downloadFile("video-files-groupc", filename);
-                System.out.println("Print 5");
                 File file = new File(filename, fileContent.length, chunkSize, new ArrayList<Endpoint>());
                 file.setData(fileContent);
                 for (int i = 0; i < file.getNumChunks(); i++) {
@@ -73,7 +71,6 @@ public class Seeder {
         } catch (IOException e) {
             System.out.println(port + "failed");
             if (port < maxPort) {
-                System.out.println("Trying port " + (port + 1));
                 return startServer(seederService, maxPort, port + 1);
             } else {
                 return false;
@@ -86,15 +83,11 @@ public class Seeder {
     }
 
     public byte[] downloadFile(String bucketName, String fileName) {
-        System.out.println("Print 1");
         Storage storage = StorageOptions.newBuilder().build().getService();
-        System.out.println("Print 2");
         Blob blob = storage.get(bucketName, fileName);
-        System.out.println("Print 3");
         if (blob == null) {
             return null;
         }
-        System.out.println("Print 4");
         return blob.getContent();
     }
 
@@ -107,7 +100,6 @@ public class Seeder {
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (Exception e) {
-            System.out.println(e.toString());
             return;
         }
         while (startIndex < fileLength) {
@@ -119,12 +111,9 @@ public class Seeder {
                 byte[] chunk = Arrays.copyOfRange(file.getData(), startIndex, endIndex);
                 byte[] hash = digest.digest(chunk);
                 hashes.add(hash);
-                System.out.println("Hash from " + startIndex + " to " + endIndex + " size " + (endIndex - startIndex) + ": " + Base64.getEncoder().encodeToString(hash));
                 startIndex += chunkMaxSize;
         }
         byte[] hash = digest.digest(file.getData());
-        System.out.println(file.getData().length);
         hashes.add(hash);
-        System.out.println("File hash = " + Base64.getEncoder().encodeToString(hash));
     }
 }

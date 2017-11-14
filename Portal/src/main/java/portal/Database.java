@@ -36,7 +36,6 @@ public class Database {
             if (!files.wasNull()) {
                 seeder = new SeederBean(address + ":" + files.getInt("Port"), files.getInt("Bitrate"));
             }
-            System.out.println(seeder);
             result.add(new FileBean(files.getString("Name"), files.getInt("Size"), seeder, keywords, files.getInt("ChunkSize")));
         }
 
@@ -101,7 +100,6 @@ public class Database {
         st.setString(2, address);
         st.setInt(3, port);
         st.setInt(4, 0);
-        System.out.println(st);
         st.executeUpdate();
         return new SeederBean(address + ":" + port, 0) ;
     }

@@ -24,13 +24,20 @@ public class CLI {
                 .property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true)
                 .register(MOXyJsonProvider.class);
         String endpoint = client.Client.config.getProperty("portalEndpoint", "http://localhost:9999");
-        System.out.println(endpoint);
         WebTarget target = httpclient.target(endpoint);
 
         Scanner scanner = new Scanner(System.in);
         Command command;
 
         while (running) {
+            System.out.println("COMMANDS:");
+            System.out.println("seeder list");
+            System.out.println("seeder search <keys>");
+            System.out.println("download <file>");
+            System.out.println("list files");
+            System.out.println("info <file>");
+            System.out.println("play <file>");
+            System.out.println("quit");
             input = scanner.nextLine();
             if (input.equals("seeder list")) {
                 command = new ListSeedersCommand();
@@ -52,7 +59,7 @@ public class CLI {
                 String filename = input.replace("play ", "");
                 playFile(filename);
             } else if(input.equals("quit")){
-                running = false;
+                System.exit(0);
             } else {
                 System.out.println("Bad usage.");
                 continue;
@@ -62,7 +69,7 @@ public class CLI {
 
     private void playFile(String filename) {
         File file = getFile(filename);
-        if(file != null) {
+        if(file != null && file.isDownloaded()) {
             ProcessBuilder processBuilder = new ProcessBuilder("ffplay", file.getPath());
             try {
                 processBuilder.start();

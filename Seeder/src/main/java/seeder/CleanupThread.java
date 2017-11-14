@@ -21,9 +21,7 @@ public class CleanupThread extends Thread {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
             }
-            System.out.println(messagesFailed);
             if(messagesFailed.keySet().isEmpty()) {
-                System.out.println("NO CLiENTS");
                 noClientsCount++;
             } else {
                 for (Endpoint address : messagesFailed.keySet()) {
@@ -40,7 +38,6 @@ public class CleanupThread extends Thread {
                 }
             }
             if(noClientsCount >= 3) {
-                System.out.println("WHAT");
                 server.shutdown();
                 running = false;
             }

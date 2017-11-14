@@ -20,7 +20,6 @@ public class MasterSeederService extends MasterSeederServiceGrpc.MasterSeederSer
 
     @Override
     public void createSeeder(FileInfo request, StreamObserver<Endpoint> responseObserver) {
-        System.out.println("Request received");
         String filename = request.getFilename();
         int chunkSize = request.getChunkSize();
         Seeder seeder = new Seeder(filename, chunkSize);

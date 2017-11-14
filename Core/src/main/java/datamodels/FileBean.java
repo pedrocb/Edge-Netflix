@@ -55,7 +55,7 @@ public class FileBean {
 
     @Override
     public String toString() {
-        return "File: " + name + " " + size + " " + keywords + "\n" + ((seeder != null) ? seeder : "");
+        return "Filename: " + name + " Size: " + size + " Keywords: " + keywords + "\n" + ((seeder != null) ? seeder : "");
     }
 
     public int getChunkSize() {

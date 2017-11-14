@@ -1,6 +1,5 @@
 package client;
 
-import com.sun.tools.corba.se.idl.ExceptionEntry;
 import core.*;
 import datamodels.File;
 import io.grpc.ManagedChannel;

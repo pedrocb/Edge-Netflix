@@ -56,10 +56,6 @@ public class DownloadFileCommand implements Command {
             if (response.getStatus() == 200) {
                 FileBean fileBean = response.readEntity(FileBean.class);
                 SeederBean seeder = fileBean.getSeeder();
-                System.out.println("Connecting to seeder " + seeder);
-                System.out.println(fileBean);
-                System.out.println(fileBean.getChunkSize());
-
 
                 File file = new File(filename, fileBean.getSize(), fileBean.getChunkSize(), new ArrayList<>());
                 DownloadFileThread thread = new DownloadFileThread(file, seeder.getEndpoint(), port, files);

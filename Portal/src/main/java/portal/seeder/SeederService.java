@@ -29,7 +29,6 @@ public class SeederService {
         ArrayList<FileBean> result;
         try {
             result = Database.getAllFiles();
-            System.out.println(result);
         } catch (SQLException e) {
             System.out.println("[ERROR] Can't access database");
             return Response.status(503).build();
@@ -44,7 +43,6 @@ public class SeederService {
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchServices(@QueryParam("keyword") final List<String> keyword) {
-        System.out.println(keyword);
         ArrayList<FileBean> files;
         ArrayList<FileBean> result;
         try {

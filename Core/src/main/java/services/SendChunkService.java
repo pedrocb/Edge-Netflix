@@ -19,7 +19,6 @@ public class SendChunkService extends SendChunkServiceGrpc.SendChunkServiceImplB
 
     @Override
     public void requestChunk(Request request, StreamObserver responseObserver){
-        System.out.println("Received chunk request");
         String filename = request.getFilename();
         int index = request.getIndex();
         File file = null;
@@ -45,7 +44,6 @@ public class SendChunkService extends SendChunkServiceGrpc.SendChunkServiceImplB
         }
         ByteString chunk = ByteString.copyFrom(file.getData(),index*file.getChunkSize(), chunkSize);
         Chunk response = Chunk.newBuilder().setData(chunk).build();
-        System.out.println("Sending Filename: "+filename+" Chunk index: "+index);
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

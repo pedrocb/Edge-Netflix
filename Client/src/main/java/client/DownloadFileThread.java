@@ -42,7 +42,6 @@ public class DownloadFileThread extends Thread {
         }
 
         file.setPeers(new ArrayList<>(joinResponse.getClientsList()));
-        System.out.println(file.getPeers());
         String[] hashes = new String[file.getNumChunks()];
         for (int i = 0; i < joinResponse.getHashesList().size(); i++) {
             hashes[i] = Base64.getEncoder().encodeToString(joinResponse.getHashesList().get(i).toByteArray());
@@ -50,7 +49,6 @@ public class DownloadFileThread extends Thread {
         file.setHashes(hashes);
         file.setFileHash(Base64.getEncoder().encodeToString(joinResponse.getFileHash().toByteArray()));
 
-        System.out.println("Starting " + file.getFilename() + " download!");
         ArrayList<Integer> missingChunksIndex = new ArrayList<>();
         for (int i = 0; i < file.getNumChunks(); i++) {
             missingChunksIndex.add(i);
@@ -64,13 +62,10 @@ public class DownloadFileThread extends Thread {
             while (!fetched && !neighbours.isEmpty()) {
                 Endpoint neighbour = neighbours.get((int) (Math.random() * neighbours.size()));
                 try {
-                    System.out.println("Starting download of chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
                     downloadChunk(neighbour, chunkIndex);
-                    System.out.println("Got chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
                     missingChunksIndex.remove(chosenMissingIndex);
                     fetched = true;
                 } catch (Exception e) {
-                    System.out.println("Could not get chunk " + chunkIndex + " from " + neighbour.getAddress() + ":" + neighbour.getPort());
                     neighbours.remove(neighbour);
                 }
             }
@@ -80,8 +75,6 @@ public class DownloadFileThread extends Thread {
                 return;
             }
         }
-        System.out.println(calculateChunkHash(file.getData()));
-        System.out.println(file.getData().length);
         if (!calculateChunkHash(file.getData()).equals(file.getFileHash())) {
             System.out.println("File hash doesn't match ");
             files.remove(files);
@@ -93,7 +86,6 @@ public class DownloadFileThread extends Thread {
             FileOutputStream fos = new FileOutputStream("video-files/" + file.getFilename());
             fos.write(file.getData());
             fos.close();
-            System.out.println("File written.");
             file.setPath("video-files/" + file.getFilename());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -114,7 +106,6 @@ public class DownloadFileThread extends Thread {
         Chunk recievedChunk = clientStub.requestChunk(request);
         ByteString chunk = recievedChunk.getData();
         byte[] receivedBytes = chunk.toByteArray();
-        System.out.println("Got bytes, size: " + receivedBytes.length);
         if (!calculateChunkHash(receivedBytes).equals(file.getHashes()[chunkIndex])) {
             throw new Exception("Hash doesn't match.");
         }

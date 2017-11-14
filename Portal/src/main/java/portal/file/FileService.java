@@ -47,7 +47,6 @@ public class FileService {
 
         String filename = fileObject.getString("file");
         synchronized (Database.connection) {
-            System.out.println("Getting file");
             try {
                 FileBean file = Database.getFile(filename);
                 if (file != null) {

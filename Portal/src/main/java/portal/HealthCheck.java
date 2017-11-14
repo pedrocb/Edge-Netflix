@@ -43,7 +43,6 @@ public class HealthCheck extends Thread {
                 try {
                     HealthResponse response = stub.withDeadlineAfter(10, TimeUnit.SECONDS).healthCheck(Empty.getDefaultInstance());
                     messagesFailed.replace(seeder.getEndpoint(), 0);
-                    System.out.println(response);
                 } catch (StatusRuntimeException exc) {
                     try {
                         if (messagesFailed.get(seeder.getEndpoint()) >= 3) {

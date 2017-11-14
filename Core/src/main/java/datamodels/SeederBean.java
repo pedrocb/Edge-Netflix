@@ -21,7 +21,7 @@ public class SeederBean {
 
     @Override
     public String toString() {
-        return endpoint + " " + bitrate;
+        return "Seeder address: " + endpoint;
     }
 
     public String getEndpoint() {
