@@ -55,6 +55,7 @@ public class DownloadFileThread extends Thread {
         for (int i = 0; i < file.getNumChunks(); i++) {
             missingChunksIndex.add(i);
         }
+        new UpdatePeersThread(file, seederEndpoint, port).start();
         while (!file.isDownloaded()) {
             int chosenMissingIndex = (int) (Math.random() * missingChunksIndex.size());
             int chunkIndex = missingChunksIndex.get(chosenMissingIndex);
