@@ -6,7 +6,6 @@ import core.Endpoint;
 import java.util.ArrayList;
 
 public class File {
-    //TODO: Sync file write/reads
     private String filename;
     private byte[] data;
     private int size;

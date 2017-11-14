@@ -86,6 +86,10 @@ public class CLI {
     }
 
     private void listFiles() {
+        if(files.isEmpty()){
+            System.out.println("No files.");
+            return;
+        }
         for (File file : files) {
             System.out.println(file.basicInfo());
         }
