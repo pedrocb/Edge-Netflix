@@ -28,7 +28,6 @@ public class File {
         this.isDownloaded = false;
     }
 
-
     public boolean isDownloaded() {
         return isDownloaded;
     }
@@ -164,4 +163,5 @@ public class File {
     public String getPath() {
         return path;
     }
+
 }

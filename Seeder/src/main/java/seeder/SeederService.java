@@ -2,6 +2,7 @@ package seeder;
 
 import com.google.protobuf.ByteString;
 import core.*;
+import datamodels.File;
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
@@ -10,9 +11,9 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
     private ArrayList<Endpoint> clients;
     private ArrayList<byte[]> chunkHashes;
 
-    public SeederService(ArrayList<byte[]> chunkHashes, int videoSize, int chunkSize) {
-        this.chunkHashes = chunkHashes;
+    public SeederService(ArrayList<byte[]> hashes) {
         clients = new ArrayList<>();
+        chunkHashes = hashes;
     }
 
     public void addSeederToClients(int port) {
@@ -32,10 +33,14 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
         for (Endpoint i : clients) {
             builder.addClients(i);
         }
-        int numberOfChunks = chunkHashes.size();
-        System.out.println("Sending chunks...");
-        for(int i = 0; i < numberOfChunks; i++) {
-            builder.addHashes(ByteString.copyFrom(chunkHashes.get(i)));
+        System.out.println("Waiting for hashes");
+        synchronized (chunkHashes) {
+            System.out.println("Here they are");
+            int numberOfChunks = chunkHashes.size();
+            System.out.println("Sending chunks...");
+            for (int i = 0; i < numberOfChunks; i++) {
+                builder.addHashes(ByteString.copyFrom(chunkHashes.get(i)));
+            }
         }
         responseObserver.onNext(builder.build());
         responseObserver.onCompleted();

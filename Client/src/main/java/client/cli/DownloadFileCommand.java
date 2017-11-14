@@ -49,21 +49,8 @@ public class DownloadFileCommand implements Command {
                 System.out.println(fileBean.getChunkSize());
 
 
-                ManagedChannel channel = ManagedChannelBuilder.forTarget(seeder.getEndpoint()).usePlaintext(true).build();
-                SeederServiceGrpc.SeederServiceBlockingStub stub = SeederServiceGrpc.newBlockingStub(channel);
-                String address = Client.config.getProperty("address", "localhost");
-                Endpoint endpoint = Endpoint.newBuilder().setAddress(address).setPort(port).build();
-                JoinResponse joinResponse = stub.joinSwarm(endpoint);
-
-
-                File file = new File(filename, fileBean.getSize(), fileBean.getChunkSize(), new ArrayList<>(joinResponse.getClientsList()));
-                String[] hashes = new String[file.getNumChunks()];
-                for (int i = 0; i < joinResponse.getHashesList().size(); i++) {
-                    hashes[i] = Base64.getEncoder().encodeToString(joinResponse.getHashesList().get(i).toByteArray());
-                }
-                file.setHashes(hashes);
-
-                DownloadFileThread thread = new DownloadFileThread(file);
+                File file = new File(filename, fileBean.getSize(), fileBean.getChunkSize(), new ArrayList<>());
+                DownloadFileThread thread = new DownloadFileThread(file, seeder.getEndpoint(), port);
                 files.add(file);
                 thread.start();
             } else if(response.getStatus() == 404) {

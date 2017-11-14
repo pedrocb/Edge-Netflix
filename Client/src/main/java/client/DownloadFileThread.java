@@ -1,13 +1,11 @@
 package client;
 
 import com.google.protobuf.ByteString;
-import core.Chunk;
-import core.Endpoint;
-import core.Request;
-import core.SendChunkServiceGrpc;
+import core.*;
 import datamodels.File;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,14 +15,32 @@ import java.util.ArrayList;
 import java.util.Base64;
 
 public class DownloadFileThread extends Thread {
+    private int port;
     private File file;
+    private String seederEndpoint;
 
-    public DownloadFileThread(File file) {
+    public DownloadFileThread(File file, String seederEndpoint, int port) {
         this.file = file;
+        this.seederEndpoint = seederEndpoint;
+        this.port = port;
     }
 
     @Override
     public void run() {
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(seederEndpoint).usePlaintext(true).build();
+        SeederServiceGrpc.SeederServiceBlockingStub stub = SeederServiceGrpc.newBlockingStub(channel);
+        String address = Client.config.getProperty("address", "localhost");
+        Endpoint endpoint = Endpoint.newBuilder().setAddress(address).setPort(port).build();
+        JoinResponse joinResponse = stub.joinSwarm(endpoint);
+
+
+        file.setPeers(new ArrayList<>(joinResponse.getClientsList()));
+        String[] hashes = new String[file.getNumChunks()];
+        for (int i = 0; i < joinResponse.getHashesList().size(); i++) {
+            hashes[i] = Base64.getEncoder().encodeToString(joinResponse.getHashesList().get(i).toByteArray());
+        }
+        file.setHashes(hashes);
+
         System.out.println("Starting " + file.getFilename() + " download!");
         ArrayList<Integer> missingChunksIndex = new ArrayList<>();
         for (int i = 0; i < file.getNumChunks(); i++) {
@@ -47,11 +63,11 @@ public class DownloadFileThread extends Thread {
         System.out.println("File " + file.getFilename() + " finished download!");
         try {
             //TODO: File path
-            FileOutputStream fos = new FileOutputStream("video-files/"+file.getFilename());
+            FileOutputStream fos = new FileOutputStream("video-files/" + file.getFilename());
             fos.write(file.getData());
             fos.close();
             System.out.println("File written.");
-            file.setPath("video-files/"+file.getFilename());
+            file.setPath("video-files/" + file.getFilename());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

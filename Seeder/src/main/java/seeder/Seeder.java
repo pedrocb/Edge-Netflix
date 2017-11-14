@@ -22,20 +22,16 @@ public class Seeder {
 
     private Server server;
     private ArrayList<File> files;
+    private ArrayList<byte[]> hashes;
+    private String filename;
+    private int chunkSize;
 
     public Seeder(String filename, int chunkSize) {
-        System.out.println("Starting " + filename + " download.");
-        byte [] fileContent = downloadFile("video-files-groupc", filename);
-        File file = new File(filename,fileContent.length,chunkSize,new ArrayList<Endpoint>());
-        file.setData(fileContent);
-        for(int i = 0; i<file.getNumChunks();i++){
-            file.setChunkAt(i,true);
-        }
-        files = new ArrayList<>();
-        files.add(file);
-        ArrayList<byte[]> chunkHashes = calculateChunkHashes();
-
-        SeederService seederService = new SeederService(chunkHashes, fileContent.length, file.getChunkSize());
+        this.filename = filename;
+        this.chunkSize = chunkSize;
+        this.files = new ArrayList<>();
+        this.hashes = new ArrayList<>();
+        SeederService seederService = new SeederService(hashes);
         int minPort = Integer.parseInt(MasterSeeder.config.getProperty("minPort", "9985"));
         int maxPort = Integer.parseInt(MasterSeeder.config.getProperty("maxPort", "9995"));
 
@@ -43,6 +39,23 @@ public class Seeder {
         System.out.println("Started on port " + getPort());
         //TODO: Desligar Seeder
         //TODO: Retirar clients desligados
+    }
+
+    public void setup() {
+        synchronized (hashes) {
+            synchronized (files) {
+                System.out.println("Starting " + filename + " download.");
+                byte[] fileContent = downloadFile("video-files-groupc", filename);
+                System.out.println("Print 5");
+                File file = new File(filename, fileContent.length, chunkSize, new ArrayList<Endpoint>());
+                file.setData(fileContent);
+                for (int i = 0; i < file.getNumChunks(); i++) {
+                    file.setChunkAt(i, true);
+                }
+                files.add(file);
+            }
+            calculateChunkHashes();
+        }
     }
 
     public void startServer(SeederService seederService, int maxPort, int port) {
@@ -55,7 +68,7 @@ public class Seeder {
             seederService.addSeederToClients(port);
         } catch (IOException e) {
             System.out.println(port + "failed");
-            if(port < maxPort) {
+            if (port < maxPort) {
                 System.out.println("Trying port " + (port + 1));
                 startServer(seederService, maxPort, port + 1);
             }
@@ -66,7 +79,7 @@ public class Seeder {
         return server.getPort();
     }
 
-    public byte [] downloadFile(String bucketName, String fileName) {
+    public byte[] downloadFile(String bucketName, String fileName) {
         System.out.println("Print 1");
         Storage storage = StorageOptions.newBuilder().build().getService();
         System.out.println("Print 2");
@@ -80,12 +93,11 @@ public class Seeder {
     }
 
 
-    public ArrayList<byte []> calculateChunkHashes(){
+    public void calculateChunkHashes() {
         File file = files.get(0);
         int fileLength = file.getSize();
-        int startIndex=0, endIndex;
-        ArrayList<byte[]> chuckHashes = new ArrayList<>();
-        while(startIndex < fileLength){
+        int startIndex = 0, endIndex;
+        while (startIndex < fileLength) {
             try {
                 int chunkMaxSize = file.getChunkSize();
                 endIndex = startIndex + chunkMaxSize;
@@ -95,14 +107,12 @@ public class Seeder {
                 byte[] chunk = Arrays.copyOfRange(file.getData(), startIndex, endIndex);
                 MessageDigest digest = MessageDigest.getInstance("SHA-256");
                 byte[] hash = digest.digest(chunk);
-                chuckHashes.add(hash);
-                System.out.println("Hash from "+startIndex+" to "+endIndex+" size "+(endIndex-startIndex)+": "+ Base64.getEncoder().encodeToString(hash));
+                hashes.add(hash);
+                System.out.println("Hash from " + startIndex + " to " + endIndex + " size " + (endIndex - startIndex) + ": " + Base64.getEncoder().encodeToString(hash));
                 startIndex += chunkMaxSize;
             } catch (Exception e) {
                 System.out.println(e.toString());
             }
-
         }
-        return chuckHashes;
     }
 }
