@@ -38,11 +38,12 @@ public class SeederService extends SeederServiceGrpc.SeederServiceImplBase{
         synchronized (chunkHashes) {
         }
         System.out.println("Here they are");
-        int numberOfChunks = chunkHashes.size();
+        int numberOfChunks = chunkHashes.size() - 1;
         System.out.println("Sending chunks...");
         for (int i = 0; i < numberOfChunks; i++) {
-                builder.addHashes(ByteString.copyFrom(chunkHashes.get(i)));
-            }
+            builder.addHashes(ByteString.copyFrom(chunkHashes.get(i)));
+        }
+        builder.setFileHash(ByteString.copyFrom(chunkHashes.get(numberOfChunks)));
         responseObserver.onNext(builder.build());
         responseObserver.onCompleted();
     }

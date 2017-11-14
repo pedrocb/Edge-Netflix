@@ -34,6 +34,7 @@ message JoinResponse {
     repeated bytes hashes = 2;
     int32 videoSize = 3; // In bytes
     int32 chunkSize = 4; // In bytes
+    bytes fileHash = 5;
 }
 
 message Endpoint {

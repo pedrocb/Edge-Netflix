@@ -1,5 +1,6 @@
 package datamodels;
 
+import com.google.protobuf.ByteString;
 import core.Endpoint;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class File {
     private String[] hashes;
     private boolean isDownloaded;
     private String path;
+    private String fileHash;
 
     public File(String filename, int size, int chunkSize, ArrayList<Endpoint> peers) {
         this.filename = filename;
@@ -164,4 +166,11 @@ public class File {
         return path;
     }
 
+    public void setFileHash(String fileHash) {
+        this.fileHash = fileHash;
+    }
+
+    public String getFileHash() {
+        return fileHash;
+    }
 }

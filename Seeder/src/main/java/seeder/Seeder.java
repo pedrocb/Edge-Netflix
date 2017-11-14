@@ -100,22 +100,28 @@ public class Seeder {
         File file = files.get(0);
         int fileLength = file.getSize();
         int startIndex = 0, endIndex;
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return;
+        }
         while (startIndex < fileLength) {
-            try {
                 int chunkMaxSize = file.getChunkSize();
                 endIndex = startIndex + chunkMaxSize;
                 if (endIndex > fileLength) {
                     endIndex = fileLength;
                 }
                 byte[] chunk = Arrays.copyOfRange(file.getData(), startIndex, endIndex);
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
                 byte[] hash = digest.digest(chunk);
                 hashes.add(hash);
                 System.out.println("Hash from " + startIndex + " to " + endIndex + " size " + (endIndex - startIndex) + ": " + Base64.getEncoder().encodeToString(hash));
                 startIndex += chunkMaxSize;
-            } catch (Exception e) {
-                System.out.println(e.toString());
-            }
         }
+        byte[] hash = digest.digest(file.getData());
+        System.out.println(file.getData().length);
+        hashes.add(hash);
+        System.out.println("File hash = " + Base64.getEncoder().encodeToString(hash));
     }
 }
